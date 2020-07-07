@@ -3,62 +3,47 @@ import numpy as np
 from sos4hjb.polynomials.variable import Variable
 
 class BasisVector:
+    '''
+    Element of the basis of a polynomial.
+
+    Attributes
+    ----------
+    power_dict : dict (key : Variable, value : int)
+        Dictionary that maps each variable to its power.
+    '''
     
     def __init__(self, power_dict):
-        lgtm_power_dict(power_dict)
         self.power_dict = {v: p for v, p in power_dict.items() if p != 0}
-
-    # def __hash__(self):
-    #     return hash(sorted((v.name, v.index, p) for v, p in self))
     
-    def __getitem__(self, v):
-        is_variable(v)
-        if v in self.power_dict:
-            return self.power_dict[v]
-        else:
-            return 0
+    def __getitem__(self, variable):
+        return self.power_dict[variable] if variable in self.power_dict else 0
         
-    def __setitem__(self, v, p):
-        is_variable(v)
-        is_power(p)
-        if p != 0:
-            self.power_dict[v] = p
+    def __setitem__(self, variable, power):
+        if power == 0:
+            self.power_dict.pop(variable, None)
+        else:
+            self.power_dict[variable] = power
 
-    def __iter__(self):
-        return iter(self.power_dict.items())
-    
     def __len__(self):
         return len(self.power_dict)
 
-    def __lt__(self, vector):
-        self_list, vector_list = self._power_dicts_to_lists(vector)
-        return self_list < vector_list
-    
-    def __gt__(self, vector):
-        self_list, vector_list = self._power_dicts_to_lists(vector)
-        return self_list > vector_list
-    
-    def __le__(self, vector):
-        return not self > vector
-    
-    def __ge__(self, vector):
-        return not self < vector
-    
+    def __iter__(self):
+        return iter(self.power_dict.items())
+
+    def __hash__(self):
+        return hash(self._hash_tuple())
+
     def __eq__(self, vector):
-        self_list, vector_list = self._power_dicts_to_lists(vector)
-        return self_list == vector_list
+        return self._hash_tuple() == vector._hash_tuple()
     
     def __ne__(self, vector):
         return not self == vector
 
-    def _power_dicts_to_lists(self, vector):
-        vs = self._merge_variables_with(vector)
-        self_list = [self[v] for v in vs]
-        vector_list = [vector[v] for v in vs]
-        return self_list, vector_list
-
-    def _merge_variables_with(self, vector):
-        return sorted(set(list(self.power_dict) + list(vector.power_dict)))
+    def _hash_tuple(self):
+        assert not 0 in self.power_dict.values()
+        hash_list = sorted((v.name, v.index, p) for v, p in self)
+        hash_list.append(type(self).__name__)
+        return tuple(hash_list)
 
     def __repr__(self):
         if len(self) == 0:
@@ -73,27 +58,5 @@ class BasisVector:
         return sum(self.power_dict.values())
 
     @staticmethod
-    def _repr(v, p):
-        return f'({v}, {p}) '
-
-def is_variable(v):
-    if not isinstance(v, Variable):
-        raise ValueError(f'''Variables must be of type Variable, got
-            {type(v)}.''')
-
-def is_power(p):
-    power_type = (int, np.int64)
-    if not isinstance(p, power_type):
-        raise ValueError(f'''Powers must be of any of these types:
-            {power_type}. Got {type(p)}.''')
-    if p < 0:
-        raise ValueError(f'Powers must be nonnegative, got {p}.')
-
-def lgtm_power_dict(power_dict):
-    if not isinstance(power_dict, dict):
-        raise ValueError(f'''power_dict must be a dictionary, got
-            {type(power_dict)}.''')
-    for v in power_dict.keys():
-        is_variable(v)
-    for p in power_dict.values():
-        is_power(p)
+    def _repr(variable, power):
+        return f'({variable}, {power}) '
