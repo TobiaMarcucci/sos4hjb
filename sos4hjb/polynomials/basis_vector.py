@@ -6,7 +6,10 @@ class BasisVector:
     
     def __init__(self, power_dict):
         lgtm_power_dict(power_dict)
-        self.power_dict = power_dict
+        self.power_dict = {v: p for v, p in power_dict.items() if p != 0}
+
+    # def __hash__(self):
+    #     return hash(sorted((v.name, v.index, p) for v, p in self))
     
     def __getitem__(self, v):
         is_variable(v)
@@ -18,7 +21,8 @@ class BasisVector:
     def __setitem__(self, v, p):
         is_variable(v)
         is_power(p)
-        self.power_dict[v] = p
+        if p != 0:
+            self.power_dict[v] = p
 
     def __iter__(self):
         return iter(self.power_dict.items())

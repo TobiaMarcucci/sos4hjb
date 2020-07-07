@@ -1,32 +1,38 @@
 import unittest
 
-from sos4hjb.polynomials.variable import Variable
-from sos4hjb.polynomials.basis_vector import BasisVector
+from sos4hjb.polynomials import Variable, BasisVector
 
 class TestBasisVector(unittest.TestCase):
 
-    def test_initialization(self):
+    def test_init(self):
 
         # Correct initializations.
         v = BasisVector({})
         self.assertEqual(v.power_dict, {})
         self.assertEqual(v.degree, 0)
         x0 = Variable('x', 0)
-        x3 = Variable('x', 3)
-        power_dict = {x0: 5, x3: 2}
+        x1 = Variable('x', 1)
+        power_dict = {x0: 5, x1: 2}
         v = BasisVector(power_dict)
         self.assertEqual(v.power_dict, power_dict)
+        self.assertEqual(v.degree, 7)
+
+        # Removes zeros.
+        x2 = Variable('x', 2)
+        power_dict[x2] = 0
+        v = BasisVector(power_dict)
+        self.assertEqual(v.power_dict, {x0: 5, x1: 2})
         self.assertEqual(v.degree, 7)
 
         # Wrong initializations.
         with self.assertRaises(ValueError):
             BasisVector([5, 2])
         with self.assertRaises(ValueError):
-            BasisVector({'x_{0}': 5, x3: 2})
+            BasisVector({'x_{0}': 5, x1: 2})
         with self.assertRaises(ValueError):
-            BasisVector({x0: 5.5, x3: 2})
+            BasisVector({x0: 5.5, x1: 2})
         with self.assertRaises(ValueError):
-            BasisVector({x0: 5.5, x3: -1})
+            BasisVector({x0: 5.5, x1: -1})
 
 
     def test_getter_and_setter(self):

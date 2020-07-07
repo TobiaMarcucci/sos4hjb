@@ -25,11 +25,11 @@ class Variable:
     def __ge__(self, v):
         return not self < v
     
-    def __eq__(self, v):
-        return self.name == v.name and self.index == v.index
+    def __eq__(self, other):
+        return self.name == other.name and self.index == other.index
     
-    def __ne__(self, v):
-        return not self == v
+    def __ne__(self, other):
+        return not self == other
 
     def __repr__(self):
         representation = self.name

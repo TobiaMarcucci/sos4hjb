@@ -1,10 +1,10 @@
 import unittest
 
-from sos4hjb.polynomials.variable import Variable
+from sos4hjb.polynomials import Variable
 
 class TestVariable(unittest.TestCase):
 
-    def test_initialization_and_representation(self):
+    def test_init_and_repr(self):
 
         # Correct initializations.
         x = Variable('x')
@@ -48,6 +48,14 @@ class TestVariable(unittest.TestCase):
         x = Variable('x')
         x0 = Variable('x', 0)
         self._test_all_orderings(x, x0)
+
+        # Equality between different instances.
+        x = Variable('x')
+        y = Variable('x')
+        self.assertTrue(x == y)
+        x = Variable('x', 0)
+        y = Variable('x', 0)
+        self.assertTrue(x == y)
 
     def _test_all_orderings(self, a, b):
 

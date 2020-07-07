@@ -1,9 +1,9 @@
 import numpy as np
 from copy import deepcopy
-from mpmath import chebyt
 from itertools import product
+from collections import deque
 
-from sos4hjb.polynomials.basis_vector import BasisVector
+from sos4hjb.polynomials.basis_vector import BasisVector, is_variable
 from sos4hjb.polynomials.polynomial import Polynomial
 
 class MonomialVector(BasisVector):
@@ -12,7 +12,7 @@ class MonomialVector(BasisVector):
         super().__init__(power_dict)
 
     def __call__(self, evaluation_dict):
-        lgtm_evaluation_dict(evaluation_dict)
+        lgtm_evaluation_dict(evaluation_dict, self.power_dict)
         return np.prod([value ** self[v] for v, value in evaluation_dict.items()])
 
     def __mul__(self, monomial):
@@ -48,8 +48,8 @@ class ChebyshevVector(BasisVector):
         super().__init__(power_dict)
 
     def __call__(self, evaluation_dict):
-        lgtm_evaluation_dict(evaluation_dict)
-        return np.prod([float(chebyt(self[v], value)) for v, value in evaluation_dict.items()])
+        lgtm_evaluation_dict(evaluation_dict, self.power_dict)
+        return np.prod([self._evaluate_univariate(self[v], value) for v, value in evaluation_dict.items()])
 
     def __mul__(self, chebyshev):
         if not self.__class__ is type(chebyshev):
@@ -128,12 +128,19 @@ class ChebyshevVector(BasisVector):
     def _repr(variable, power):
         return f'T_{{{power}}}({variable}) '
 
+    @staticmethod
+    def _evaluate_univariate(p, v):
+        T = deque([2 * v ** 2 - 1, v], maxlen=2)
+        for i in range(p + 1):
+            T.append(2 * v * T[1] - T[0])
+        return T[1]
+
 def lgtm_evaluation_dict(evaluation_dict, power_dict):
     if not isinstance(evaluation_dict, dict):
         raise ValueError(f'''evaluation_dict must be a dictionary, got
-            {power_dict.__class__}.''')
+            {type(power_dict)}.''')
     for v in evaluation_dict.keys():
-        test_variable(v)
+        is_variable(v)
     if not all(v in evaluation_dict for v in power_dict):
         raise ValueError('''evaluation_dict must assign a value to
             each variable in the power_dict.''')

@@ -11,13 +11,13 @@ class Polynomial:
     def __init__(self, coefficients, basis):
         lgtm_coefficients_and_basis(coefficients, basis)
 
-        # Clean coefficients and basis from duplicate vectors.
+        # Remove duplicate basis vectors.
         uniques = [basis.index(v) for v in basis]
         basis = [basis[i] for i in sorted(set(uniques))]
         duplicates = [np.where(np.array(uniques) == i)[0] for i in range(len(basis))]
         coefficients = [sum(coefficients[j] for j in i) for i in duplicates]
 
-        # Remove zeros for the coefficents, and store.
+        # Remove zeros from the coefficents, sort, and store.
         nonzeros = np.where(np.array(coefficients) != 0)[0]
         self.basis = [basis[i] for i in nonzeros]
         self.coefficients = [coefficients[i] for i in nonzeros]
@@ -115,6 +115,12 @@ class Polynomial:
             
     def _repr_latex_(self):
         return '$' + self.__repr__() + '$'
+
+    def derivative(v):
+    	pass
+
+    def primitive(v):
+    	pass
 
 def lgtm_coefficients_and_basis(coefficients, basis):
 
