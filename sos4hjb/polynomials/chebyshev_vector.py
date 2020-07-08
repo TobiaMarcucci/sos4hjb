@@ -36,12 +36,11 @@ class ChebyshevVector(BasisVector):
         '''
         power = self[variable]
         derivative = Polynomial({})
-        if power > 0:
-            for q in range(power):
-                if (power % 2 and q % 2 == 0) or (power % 2 == 0 and q % 2):
-                    cheb = deepcopy(self)
-                    cheb[variable] = q
-                    derivative[cheb] = power if q == 0 else power * 2
+        for q in range(power):
+            if (power + q) % 2:
+                cheb = deepcopy(self)
+                cheb[variable] = q
+                derivative[cheb] = power if q == 0 else power * 2
         return derivative
 
     # ToDo: write more nicely, test, and document.
