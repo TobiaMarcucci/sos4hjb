@@ -47,6 +47,7 @@ class TestMonomialVector(unittest.TestCase):
         self.assertEqual(p[m_pr], 1 / 3)
 
     def test_repr(self):
+        
         x = Variable('x')
         x3 = Variable('x', 3)
         m = MonomialVector({x: 5, x3: 2})

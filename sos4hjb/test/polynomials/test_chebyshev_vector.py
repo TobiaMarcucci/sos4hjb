@@ -6,7 +6,6 @@ class TestChebyshevVector(unittest.TestCase):
 
     def test_call(self):
 
-        # Legitimate evaluation dict.
         x = Variable('x')
         y = Variable('y')
         power_dict = {x: 5, y: 2}
@@ -79,6 +78,7 @@ class TestChebyshevVector(unittest.TestCase):
         pass
 
     def test_repr(self):
+        
         x = Variable('x')
         x3 = Variable('x', 3)
         c = ChebyshevVector({x: 5, x3: 2})

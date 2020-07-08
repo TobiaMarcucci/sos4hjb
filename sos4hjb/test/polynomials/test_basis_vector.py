@@ -54,6 +54,7 @@ class TestBasisVector(unittest.TestCase):
         self.assertTrue(v != w)
         
     def test_repr(self):
+        
         x = Variable('x')
         x3 = Variable('x', 3)
         v = BasisVector({x: 5, x3: 2})

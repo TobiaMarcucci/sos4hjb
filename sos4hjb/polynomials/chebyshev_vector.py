@@ -8,7 +8,7 @@ from sos4hjb.polynomials.polynomial import Polynomial
 
 class ChebyshevVector(BasisVector):
     '''
-    cheb polynomials of the first kind of the form
+    Multivariate Chebyshev polynomials of the first kind of the form
     T_p1(v1) * T_p2(v2) * ... * T_pn(vn).
     '''
 
@@ -22,29 +22,27 @@ class ChebyshevVector(BasisVector):
         variables = set(list(self.power_dict) + list(cheb.power_dict))
         prod_powers = ((self[v] + cheb[v], abs(self[v] - cheb[v])) for v in variables)
         coef = .5 ** len(variables)
-        poly = Polynomial({})
+        multiplication = Polynomial({})
         for powers in product(*prod_powers):
             cheb = ChebyshevVector(dict(zip(variables, powers)))
-            poly += Polynomial({cheb: coef})
-        return poly
+            multiplication += Polynomial({cheb: coef})
+        return multiplication
 
     def derivative(self, variable):
-
-        # Derivative of 1 is 0.
+        '''
+        Uses the formula for the derivative in terms of the polynomials of the
+        second kind, then express the polynomial of the second kind as a sum of
+        polynomials of the first.
+        '''
         power = self[variable]
-        if power == 0:
-            return Polynomial({})
-
-        # Use the formula for the derivative in terms of the polynomials of the
-        # second kind, then express the polynomial of the second kind as a sum
-        # of polynomials of the first.
-        poly = Polynomial({})
-        for q in range(power):
-            if (power % 2 and q % 2 == 0) or (power % 2 == 0 and q % 2):
-                cheb = deepcopy(self)
-                cheb[variable] = q
-                poly[cheb] = power if q == 0 else power * 2
-        return poly
+        derivative = Polynomial({})
+        if power > 0:
+            for q in range(power):
+                if (power % 2 and q % 2 == 0) or (power % 2 == 0 and q % 2):
+                    cheb = deepcopy(self)
+                    cheb[variable] = q
+                    derivative[cheb] = power if q == 0 else power * 2
+        return derivative
 
     # ToDo: write more nicely, test, and document.
     def primitive(self, variable):
