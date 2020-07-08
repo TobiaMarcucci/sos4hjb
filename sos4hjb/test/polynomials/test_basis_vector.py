@@ -23,14 +23,13 @@ class TestBasisVector(unittest.TestCase):
         self.assertEqual(v.power_dict, {x: 5, y: 2})
         self.assertEqual(v.degree, 7)
 
-    def test_getter_and_setter(self):
+    def test_getter_setter(self):
 
         # Getter.
         x = Variable('x')
         y = Variable('y')
         z = Variable('z')
-        power_dict = {x: 5, y: 2}
-        v = BasisVector(power_dict)
+        v = BasisVector({x: 5, y: 2})
         self.assertEqual(v[x], 5)
         self.assertEqual(v[y], 2)
         self.assertEqual(v[z], 0)
@@ -41,7 +40,17 @@ class TestBasisVector(unittest.TestCase):
         self.assertEqual(v[x], 2)
         self.assertEqual(v[z], 6)
 
-    def test_eq_ineq(self):
+        # Delete instead of setting to zero.
+        v[z] = 0
+        self.assertEqual(v[z], 0)
+        self.assertEqual(len(v), 2)
+
+        # Do not set if zero.
+        v[z] = 0
+        self.assertEqual(v[z], 0)
+        self.assertFalse(z in v)
+
+    def test_eq_ne(self):
 
         x = Variable('x')
         y = Variable('y')
@@ -52,27 +61,49 @@ class TestBasisVector(unittest.TestCase):
         self.assertTrue(u == v)
         self.assertTrue(u != w)
         self.assertTrue(v != w)
-        
+
+    def test_len(self):
+
+        v = BasisVector({})
+        self.assertEqual(len(v), 0)
+        x = Variable('x')
+        y = Variable('y')
+        v = BasisVector({x: 5, y: 2})
+        self.assertEqual(len(v), 2)
+
+    def test_contains(self):
+
+        x = Variable('x')
+        y = Variable('y')
+        z = Variable('z')
+        v = BasisVector({x: 5, y: 2})
+        self.assertTrue(x in v)
+        self.assertTrue(y in v)
+        self.assertFalse(z in v)
+
+    def test_iter(self):
+
+        x = Variable('x')
+        y = Variable('y')
+        power_dict = {x: 5, y: 2}
+        vector = BasisVector(power_dict)
+        for v, p in vector:
+            self.assertEqual(p, power_dict[v])
+        self.assertEqual(set(vector.variables()), set(power_dict))
+        self.assertEqual(set(vector.powers()), set(power_dict.values()))
+
+    def test_degree(self):
+
+        v = BasisVector({})
+        self.assertEqual(v.degree, 0)
+        x = Variable('x')
+        y = Variable('y')
+        v = BasisVector({x: 5, y: 2})
+        self.assertEqual(v.degree, 7)
+
     def test_repr(self):
-        
+
         x = Variable('x')
         x3 = Variable('x', 3)
         v = BasisVector({x: 5, x3: 2})
         self.assertEqual(v.__repr__(), '(x,5)(x_{3},2)')
-
-    def test_misc(self):
-
-        # Degree and length.
-        v = BasisVector({})
-        self.assertEqual(v.degree, 0)
-        self.assertEqual(len(v), 0)
-        x = Variable('x')
-        y = Variable('y')
-        power_dict = {x: 5, y: 2}
-        v = BasisVector(power_dict)
-        self.assertEqual(v.degree, 7)
-        self.assertEqual(len(v), 2)
-
-        # Iteration.
-        for v, p in v:
-            self.assertEqual(p, power_dict[v])

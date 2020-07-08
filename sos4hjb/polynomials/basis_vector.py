@@ -24,12 +24,6 @@ class BasisVector:
         else:
             self.power_dict[variable] = power
 
-    def __len__(self):
-        return len(self.power_dict)
-
-    def __iter__(self):
-        return iter(self.power_dict.items())
-
     def __hash__(self):
         return hash(self._hash_tuple())
 
@@ -40,10 +34,19 @@ class BasisVector:
         return not self == vector
 
     def _hash_tuple(self):
-        assert not 0 in self.power_dict.values()
+        assert not 0 in self.powers()
         hash_list = sorted((v.name, v.index, p) for v, p in self)
         hash_list.append(type(self).__name__)
         return tuple(hash_list)
+
+    def __len__(self):
+        return len(self.power_dict)
+
+    def __contains__(self, variable):
+        return variable in self.power_dict
+
+    def __iter__(self):
+        return iter(self.power_dict.items())
 
     def __repr__(self):
         if len(self) == 0:
@@ -53,9 +56,15 @@ class BasisVector:
     def _repr_latex_(self):
         return '$' + self.__repr__() + '$'
 
+    def variables(self):
+        return list(self.power_dict)
+
+    def powers(self):
+        return list(self.power_dict.values())
+
     @property
     def degree(self):
-        return sum(self.power_dict.values())
+        return sum(self.powers())
 
     @staticmethod
     def _repr(variable, power):

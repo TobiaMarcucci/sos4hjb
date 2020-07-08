@@ -28,12 +28,15 @@ class Polynomial:
     def __len__(self):
         return len(self.coef_dict)
 
+    def __contains__(self, vector):
+        return vector in self.coef_dict
+
     def __iter__(self):
         return iter(self.coef_dict.items())
 
     # Currently allows addition of monomials of different type.
     def __add__(self, poly):
-        vectors = set(list(self.coef_dict) + list(poly.coef_dict))
+        vectors = set(self.vectors() + poly.vectors())
         coef_dict = {vector: self[vector] + poly[vector] for vector in vectors}
         return Polynomial(coef_dict)
 
@@ -86,7 +89,7 @@ class Polynomial:
     def __repr__(self):
 
         # Represent polynomial as 0 if all the coefficients are 0.
-        assert not 0 in self.coef_dict.values()
+        assert not 0 in self.coefficients()
         if len(self) == 0:
             return '0'
 
@@ -109,3 +112,13 @@ class Polynomial:
             
     def _repr_latex_(self):
         return '$' + self.__repr__() + '$'
+
+    def vectors(self):
+        return list(self.coef_dict)
+
+    def coefficients(self):
+        return list(self.coef_dict.values())
+
+    @property
+    def degree(self):
+        return max(v.degree for v in self.vectors())
