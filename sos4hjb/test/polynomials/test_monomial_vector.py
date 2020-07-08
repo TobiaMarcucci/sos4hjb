@@ -28,17 +28,20 @@ class TestMonomialVector(unittest.TestCase):
         m01 = MonomialVector({x: 5, y: 4, z: 3})
         self.assertEqual(p[m01], 1)
 
-    def test_derivative_and_primitive(self):
+    def test_derivative(self):
 
-        # Derivative.
-        x = Variable('x', 0)
-        y = Variable('x', 1)
+        x = Variable('x')
+        y = Variable('y')
         m = MonomialVector({x: 5, y: 2})
         p = m.derivative(y)
         m_der = MonomialVector({x: 5, y: 1})
         self.assertEqual(p[m_der], 2)
 
-        # Primitive.
+    def test_primitive(self):
+
+        x = Variable('x')
+        y = Variable('y')
+        m = MonomialVector({x: 5, y: 2})
         p = m.primitive(y)
         m_pr = MonomialVector({x: 5, y: 3})
         self.assertEqual(p[m_pr], 1 / 3)

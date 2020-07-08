@@ -5,6 +5,9 @@ from sos4hjb.polynomials.basis_vector import BasisVector
 from sos4hjb.polynomials.polynomial import Polynomial
 
 class MonomialVector(BasisVector):
+    '''
+    Monomial of the form v1 ** p1 * v2 ** p2 * ... * vn ** pn.
+    '''
 
     def __init__(self, power_dict):
         super().__init__(power_dict)

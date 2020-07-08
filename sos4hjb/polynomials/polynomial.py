@@ -31,6 +31,7 @@ class Polynomial:
     def __iter__(self):
         return iter(self.coef_dict.items())
 
+    # Currently allows addition of monomials of different type.
     def __add__(self, poly):
         vectors = set(list(self.coef_dict) + list(poly.coef_dict))
         coef_dict = {vector: self[vector] + poly[vector] for vector in vectors}
@@ -45,6 +46,7 @@ class Polynomial:
     def __isub__(self, poly):
         return self - poly
 
+    # Broken multiplication of monomials of different type.
     def __mul__(self, other):
 
         # If multiplication by a scalar.
