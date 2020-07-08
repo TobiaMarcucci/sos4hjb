@@ -59,4 +59,4 @@ class BasisVector:
 
     @staticmethod
     def _repr(variable, power):
-        return f'({variable}, {power}) '
+        return f'({variable},{power})'

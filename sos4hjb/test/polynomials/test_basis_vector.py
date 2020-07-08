@@ -53,11 +53,11 @@ class TestBasisVector(unittest.TestCase):
         self.assertTrue(u != w)
         self.assertTrue(v != w)
         
-    def test_representation(self):
+    def test_repr(self):
         x = Variable('x')
         x3 = Variable('x', 3)
         v = BasisVector({x: 5, x3: 2})
-        self.assertEqual(v.__repr__(), '(x, 5) (x_{3}, 2) ')
+        self.assertEqual(v.__repr__(), '(x,5)(x_{3},2)')
 
     def test_misc(self):
 
