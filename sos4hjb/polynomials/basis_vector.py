@@ -47,10 +47,6 @@ class BasisVector:
     def __len__(self):
         return len(self.power_dict)
 
-    def __contains__(self, variable):
-        self._verify_variable(variable)
-        return variable in self.power_dict
-
     def __iter__(self):
         return iter(self.power_dict.items())
 

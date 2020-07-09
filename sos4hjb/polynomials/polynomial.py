@@ -31,9 +31,6 @@ class Polynomial:
     def __len__(self):
         return len(self.coef_dict)
 
-    def __contains__(self, vector):
-        return vector in self.coef_dict
-
     def __iter__(self):
         return iter(self.coef_dict.items())
 
@@ -52,13 +49,13 @@ class Polynomial:
 
     def __mul__(self, other):
 
-        # Multiplication by a scalar.
-        scalar = (float, int, np.float64, np.int64)
-        if isinstance(other, scalar):
-            return Polynomial({v: c * other for v, c in self})
+        # Multiplication by another polynomial.
+        if isinstance(other, Polynomial):
+            return sum([(vs * vo) * (cs * co) for vs, cs in self for vo, co in other], Polynomial({}))
 
-        # Multiplication by a polynomial.
-        return sum([(vs * vo) * (cs * co) for vs, cs in self for vo, co in other], Polynomial({}))
+        # Anything different from a Polynomial is treated as a scalar.
+        else:
+            return Polynomial({v: c * other for v, c in self})
 
     def __imul__(self, other):
         return self * other

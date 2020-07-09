@@ -6,22 +6,22 @@ class TestBasisVector(unittest.TestCase):
 
     def test_init(self):
 
-        # Simple initializations.
+        # Empty initialization.
         v = BasisVector({})
         self.assertEqual(v.power_dict, {})
+
+        # Simple initialization.
         x = Variable('x')
         y = Variable('y')
         power_dict = {x: 5, y: 2}
         v = BasisVector(power_dict)
         self.assertEqual(v.power_dict, power_dict)
-        self.assertEqual(v.degree, 7)
 
         # Removes zeros.
         z = Variable('z')
         power_dict[z] = 0
         v = BasisVector(power_dict)
         self.assertEqual(v.power_dict, {x: 5, y: 2})
-        self.assertEqual(v.degree, 7)
 
         # Non-variable variable.
         with self.assertRaises(TypeError):
@@ -44,12 +44,15 @@ class TestBasisVector(unittest.TestCase):
         self.assertEqual(v[x], 5)
         self.assertEqual(v[y], 2)
         self.assertEqual(v[z], 0)
+        self.assertEqual(len(v), 2)
 
         # Setter.
-        v[x] = 2
+        v[x] = 12
         v[z] = 6
-        self.assertEqual(v[x], 2)
+        self.assertEqual(v[x], 12)
+        self.assertEqual(v[y], 2)
         self.assertEqual(v[z], 6)
+        self.assertEqual(len(v), 3)
 
         # Delete instead of setting to zero.
         v[z] = 0
@@ -59,7 +62,6 @@ class TestBasisVector(unittest.TestCase):
         # Do not set if zero.
         v[z] = 0
         self.assertEqual(v[z], 0)
-        self.assertFalse(z in v)
 
         # Non-variable variable.
         with self.assertRaises(TypeError):
@@ -93,18 +95,6 @@ class TestBasisVector(unittest.TestCase):
         y = Variable('y')
         v = BasisVector({x: 5, y: 2})
         self.assertEqual(len(v), 2)
-
-    def test_contains(self):
-
-        x = Variable('x')
-        y = Variable('y')
-        z = Variable('z')
-        v = BasisVector({x: 5, y: 2})
-        self.assertTrue(x in v)
-        self.assertTrue(y in v)
-        self.assertFalse(z in v)
-        with self.assertRaises(TypeError):
-            55 in v
 
     def test_iter(self):
 
