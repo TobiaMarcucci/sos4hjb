@@ -89,8 +89,8 @@ class TestBasisVector(unittest.TestCase):
         vector = BasisVector(power_dict)
         for v, p in vector:
             self.assertEqual(p, power_dict[v])
-        self.assertEqual(set(vector.variables()), set(power_dict))
-        self.assertEqual(set(vector.powers()), set(power_dict.values()))
+        self.assertEqual(set(vector.variables), set(power_dict))
+        self.assertEqual(set(vector.powers), set(power_dict.values()))
 
     def test_degree(self):
 

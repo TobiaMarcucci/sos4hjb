@@ -75,10 +75,29 @@ class TestChebyshevVector(unittest.TestCase):
 
     def test_primitive(self):
 
-        pass
+        # Power 0.
+        x = Variable('x')
+        y = Variable('y')
+        z = Variable('z')
+        c = ChebyshevVector({y: 1, z: 3})
+        p = c.primitive(x)
+        self.assertEqual(len(p), 1)
+        self.assertEqual(p[ChebyshevVector({x: 1, y: 1, z: 3})], 1)
+
+        # Power 1.
+        p = c.primitive(y)
+        self.assertEqual(len(p), 2)
+        self.assertEqual(p[ChebyshevVector({z: 3})], 1 / 4)
+        self.assertEqual(p[ChebyshevVector({y: 2, z: 3})], 1 / 4)
+
+        # Power > 1.
+        p = c.primitive(z)
+        self.assertEqual(len(p), 2)
+        self.assertEqual(p[ChebyshevVector({y: 1, z: 2})], - 1 / 4)
+        self.assertEqual(p[ChebyshevVector({y: 1, z: 4})], 1 / 8)
 
     def test_repr(self):
-        
+
         x = Variable('x')
         x3 = Variable('x', 3)
         c = ChebyshevVector({x: 5, x3: 2})

@@ -19,7 +19,7 @@ class ChebyshevVector(BasisVector):
         return np.prod([self._call_univariate(p, evaluation_dict[v]) for v, p in self])
 
     def __mul__(self, cheb):
-        variables = set(self.variables() + cheb.variables())
+        variables = set(self.variables + cheb.variables)
         prod_powers = ((self[v] + cheb[v], abs(self[v] - cheb[v])) for v in variables)
         coef = .5 ** len(variables)
         multiplication = Polynomial({})
@@ -43,29 +43,16 @@ class ChebyshevVector(BasisVector):
                 derivative[cheb] = power if q == 0 else power * 2
         return derivative
 
-    # ToDo: write more nicely, test, and document.
     def primitive(self, variable):
         power = self[variable]
-        cheb_0 = deepcopy(self)
-        cheb_0[variable] = 0
-        # ToDo: try to merge this case with the next two.
-        if power == 0:
-            cheb_0[variable] = 1
-            coef_dict = {cheb_0: 1}
-        # ToDo: merge this case with the next one.
-        elif power == 1:
-            cheb = deepcopy(cheb_0)
-            cheb[variable] = 2
-            coef_dict = {cheb_0: .25, cheb: .25}
-        else:
-            cheb_1 = deepcopy(cheb_0)
-            cheb_1[variable] = power + 1
-            cheb_0[variable] = power - 1
-            coef_0 = .5 / (1 - power)
-            # ToDo: simplify here.
-            coef_1 = .5 * (power - 1) / (power ** 2 - 1)
-            coef_dict = {cheb_0: coef_0, cheb_1: coef_1}
-        return Polynomial(coef_dict)
+        primitive = Polynomial({})
+        cheb = deepcopy(self)
+        cheb[variable] = power + 1
+        primitive[cheb] = .5 / (1 + power)
+        cheb = deepcopy(self)
+        cheb[variable] = abs(power - 1)
+        primitive[cheb] += .25 if power == 1 else .5 / (1 - power)
+        return primitive
 
     @staticmethod
     def _repr(variable, power):

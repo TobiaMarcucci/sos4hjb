@@ -36,7 +36,7 @@ class Polynomial:
 
     # Currently allows addition of monomials of different type.
     def __add__(self, poly):
-        vectors = set(self.vectors() + poly.vectors())
+        vectors = set(self.vectors + poly.vectors)
         coef_dict = {vector: self[vector] + poly[vector] for vector in vectors}
         return Polynomial(coef_dict)
 
@@ -89,7 +89,7 @@ class Polynomial:
     def __repr__(self):
 
         # Represent polynomial as 0 if all the coefficients are 0.
-        assert not 0 in self.coefficients()
+        assert not 0 in self.coefficients
         if len(self) == 0:
             return '0'
 
@@ -113,12 +113,14 @@ class Polynomial:
     def _repr_latex_(self):
         return '$' + self.__repr__() + '$'
 
+    @property
     def vectors(self):
         return list(self.coef_dict)
 
+    @property
     def coefficients(self):
         return list(self.coef_dict.values())
 
     @property
     def degree(self):
-        return max(v.degree for v in self.vectors())
+        return max(v.degree for v in self.vectors)
