@@ -19,6 +19,7 @@ class ChebyshevVector(BasisVector):
         return np.prod([self._call_univariate(p, evaluation_dict[v]) for v, p in self])
 
     def __mul__(self, cheb):
+        self._raise_if_multiplied_by_different_type(cheb)
         variables = set(self.variables + cheb.variables)
         prod_powers = ((self[v] + cheb[v], abs(self[v] - cheb[v])) for v in variables)
         coef = .5 ** len(variables)
@@ -37,7 +38,7 @@ class ChebyshevVector(BasisVector):
         power = self[variable]
         derivative = Polynomial({})
         for q in range(power):
-            if (power + q) % 2:
+            if power % 2 ^ q % 2:
                 cheb = deepcopy(self)
                 cheb[variable] = q
                 derivative[cheb] = power if q == 0 else power * 2

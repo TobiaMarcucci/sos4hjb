@@ -79,7 +79,7 @@ class BasisVector:
 
     def _raise_if_multiplied_by_different_type(self, vector):
         if not isinstance(vector, type(self)):
-            raise TypeError(f'cannot multiply {type(self).__name__} by {type(vector).__name__}.')
+            raise TypeError(f'cannot multiply {type(self).__name__} with {type(vector).__name__}.')
 
 def _raise_if_not_variable(variable):
     if not isinstance(variable, Variable):

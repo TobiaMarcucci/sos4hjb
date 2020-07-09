@@ -1,6 +1,6 @@
 import unittest
 
-from sos4hjb.polynomials import Variable, ChebyshevVector
+from sos4hjb.polynomials import Variable, MonomialVector, ChebyshevVector
 
 class TestChebyshevVector(unittest.TestCase):
 
@@ -48,6 +48,12 @@ class TestChebyshevVector(unittest.TestCase):
         self.assertEqual(p[ChebyshevVector({x: 10, y: 2})], 1 / 4)
         self.assertEqual(p[ChebyshevVector({y: 4})], 1 / 4)
         self.assertEqual(p[ChebyshevVector({y: 2})], 1 / 4)
+
+        # Multiplication by wrong type.
+        c = ChebyshevVector({x: 3, y: 4})
+        m = MonomialVector({x: 5, y: 2})
+        with self.assertRaises(TypeError):
+            c * m
 
     def test_derivative(self):
 
