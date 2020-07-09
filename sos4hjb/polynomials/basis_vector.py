@@ -1,6 +1,6 @@
 import numpy as np
 
-from sos4hjb.polynomials.variable import Variable
+from sos4hjb.polynomials.variable import Variable, _raise_if_not_nonnegative_int
 
 class BasisVector:
     '''
@@ -13,12 +13,17 @@ class BasisVector:
     '''
     
     def __init__(self, power_dict):
+        for variable, power in power_dict.items():
+            _raise_if_not_variable(variable)
+            _raise_if_not_nonnegative_int(power, 'power')
         self.power_dict = {v: p for v, p in power_dict.items() if p != 0}
     
     def __getitem__(self, variable):
         return self.power_dict[variable] if variable in self.power_dict else 0
         
     def __setitem__(self, variable, power):
+        _raise_if_not_variable(variable)
+        _raise_if_not_nonnegative_int(power, 'power')
         if power == 0:
             self.power_dict.pop(variable, None)
         else:
@@ -71,3 +76,13 @@ class BasisVector:
     @staticmethod
     def _repr(variable, power):
         return f'({variable},{power})'
+
+    def _raise_if_multiplied_by_different_type(self, vector):
+        if not isinstance(vector, type(self)):
+            raise TypeError(f'cannot multiply {type(self).__name__} by {type(vector).__name__}.')
+
+def _raise_if_not_variable(variable):
+    if not isinstance(variable, Variable):
+        raise TypeError(f'variable must be of Variable type, got {type(variable).__name__}.')
+
+

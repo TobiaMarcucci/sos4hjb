@@ -23,6 +23,17 @@ class TestBasisVector(unittest.TestCase):
         self.assertEqual(v.power_dict, {x: 5, y: 2})
         self.assertEqual(v.degree, 7)
 
+        # Non-variable variable.
+        with self.assertRaises(TypeError):
+            BasisVector({x: 5, 'y': 2})
+        with self.assertRaises(TypeError):
+            BasisVector({x: 5, 4: 2})
+
+        # Non-integer power.
+        power_dict[z] = 3.33
+        with self.assertRaises(TypeError):
+            BasisVector(power_dict)
+
     def test_getter_setter(self):
 
         # Getter.
@@ -49,6 +60,18 @@ class TestBasisVector(unittest.TestCase):
         v[z] = 0
         self.assertEqual(v[z], 0)
         self.assertFalse(z in v)
+
+        # Non-variable variable.
+        with self.assertRaises(TypeError):
+            v['z'] = 5
+        with self.assertRaises(TypeError):
+            v[4] = 5
+
+        # Non-integer power.
+        with self.assertRaises(TypeError):
+            v[z] = 1.5
+        with self.assertRaises(ValueError):
+            v[z] = - 2
 
     def test_eq_ne(self):
 
