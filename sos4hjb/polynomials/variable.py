@@ -1,3 +1,5 @@
+import numpy as np
+
 class Variable:
     '''
     Elementary variable for a polynomial.
@@ -7,10 +9,11 @@ class Variable:
     name : str
         Name of the variable.
     index : int
-        Index of the variable. If equal to 0, the variable will haveno index.
+        Index of the variable. If equal to 0, the variable will have no index.
     '''
 
     def __init__(self, name, index=0):
+        _raise_if_not_nonnegative_int(index, 'index')
         self.name = name
         self.index = index
 
@@ -35,3 +38,9 @@ class Variable:
     @staticmethod
     def multivariate(name, size): 
         return [Variable(name, index=i) for i in range(1, size + 1)]
+
+def _raise_if_not_nonnegative_int(x, name):
+    if not isinstance(x, (int, np.int64)):
+        raise TypeError(f'{name} must be integer, got {type(x).__name__}.')
+    if x < 0:
+        raise ValueError(f'{name} must be nonnegative, got {x}.')

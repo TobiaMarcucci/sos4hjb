@@ -16,6 +16,12 @@ class TestVariable(unittest.TestCase):
         self.assertEqual(x1.name, 'x')
         self.assertEqual(x1.index, 1)
 
+        # Wrong initializations.
+        with self.assertRaises(TypeError):
+            Variable('x', .5)
+        with self.assertRaises(ValueError):
+            Variable('x', -1)
+
     def test_eq_ineq(self):
 
         # Variable without index.
