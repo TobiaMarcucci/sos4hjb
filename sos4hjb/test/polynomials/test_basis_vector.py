@@ -31,7 +31,7 @@ class TestBasisVector(unittest.TestCase):
 
         # Non-integer power.
         power_dict[z] = 3.33
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             BasisVector(power_dict)
 
     def test_getter_setter(self):
@@ -68,7 +68,7 @@ class TestBasisVector(unittest.TestCase):
             v[4] = 5
 
         # Non-integer power.
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             v[z] = 1.5
         with self.assertRaises(ValueError):
             v[z] = - 2
@@ -103,6 +103,8 @@ class TestBasisVector(unittest.TestCase):
         self.assertTrue(x in v)
         self.assertTrue(y in v)
         self.assertFalse(z in v)
+        with self.assertRaises(TypeError):
+            55 in v
 
     def test_iter(self):
 

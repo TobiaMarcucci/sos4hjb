@@ -15,7 +15,7 @@ class Polynomial:
     '''
 
     def __init__(self, coef_dict):
-        _raise_if_multiple_type_basis(coef_dict.keys())
+        self._verify_vectors(coef_dict.keys())
         self.coef_dict = {v: c for v, c in coef_dict.items() if c != 0}
 
     def __getitem__(self, vector):
@@ -26,7 +26,7 @@ class Polynomial:
             self.coef_dict.pop(vector, None)
         else:
             self.coef_dict[vector] = coef
-            _raise_if_multiple_type_basis(self.vectors)
+            self._verify_vectors(self.vectors)
 
     def __len__(self):
         return len(self.coef_dict)
@@ -120,7 +120,11 @@ class Polynomial:
     def degree(self):
         return max(v.degree for v in self.vectors)
 
-def _raise_if_multiple_type_basis(basis):
-    basis_types = set(type(v).__name__ for v in basis)
-    if len(basis_types) > 1:
-        raise TypeError(f'basis vectors must have same type, got {basis_types}.')
+    @staticmethod
+    def _verify_vectors(vectors):
+        for vector in vectors:
+            if not issubclass(type(vector), BasisVector):
+                raise TypeError(f'basis vectors must be subclasses of BasisVector.')
+        vector_types = set(type(v).__name__ for v in vectors)
+        if len(vector_types) > 1:
+            raise TypeError(f'basis vectors must have same type, got {vector_types}.')

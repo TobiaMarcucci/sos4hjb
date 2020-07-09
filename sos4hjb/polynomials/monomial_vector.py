@@ -16,7 +16,7 @@ class MonomialVector(BasisVector):
         return np.prod([evaluation_dict[v] ** p for v, p in self])
 
     def __mul__(self, monomial):
-        self._raise_if_multiplied_by_different_type(monomial)
+        self._verify_multiplicand(monomial)
         variables = set(self.variables + monomial.variables)
         monomial = MonomialVector({v: self[v] + monomial[v] for v in variables})
         return Polynomial({monomial: 1})

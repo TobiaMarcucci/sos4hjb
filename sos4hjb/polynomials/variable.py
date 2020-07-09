@@ -8,12 +8,13 @@ class Variable:
     ----------
     name : str
         Name of the variable.
-    index : int
+    index : int (>= 0)
         Index of the variable. If equal to 0, the variable will have no index.
     '''
 
     def __init__(self, name, index=0):
-        _raise_if_not_nonnegative_int(index, 'index')
+        self._verify_name(name)
+        self._verify_index(index)
         self.name = name
         self.index = index
 
@@ -21,7 +22,10 @@ class Variable:
         return hash((self.name, self.index))
 
     def __eq__(self, variable):
-        return self.name == variable.name and self.index == variable.index
+        same_type = type(self) == type(variable)
+        same_name = self.name == variable.name
+        same_index = self.index == variable.index
+        return same_type and same_name and same_index
     
     def __ne__(self, variable):
         return not self == variable
@@ -39,8 +43,12 @@ class Variable:
     def multivariate(name, size): 
         return [Variable(name, index=i) for i in range(1, size + 1)]
 
-def _raise_if_not_nonnegative_int(x, name):
-    if not isinstance(x, (int, np.int64)):
-        raise TypeError(f'{name} must be integer, got {type(x).__name__}.')
-    if x < 0:
-        raise ValueError(f'{name} must be nonnegative, got {x}.')
+    @ staticmethod
+    def _verify_name(name):
+        if not isinstance(name, str):
+            raise TypeError(f'name must be a string, got {type(name).__name__}.')
+
+    @ staticmethod
+    def _verify_index(index):
+        if index % 1 or index < 0:
+            raise ValueError(f'index must be a nonnegative integer, got {index}.')

@@ -18,6 +18,8 @@ class TestVariable(unittest.TestCase):
 
         # Wrong initializations.
         with self.assertRaises(TypeError):
+            Variable(5)
+        with self.assertRaises(ValueError):
             Variable('x', .5)
         with self.assertRaises(ValueError):
             Variable('x', -1)

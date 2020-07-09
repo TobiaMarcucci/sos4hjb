@@ -1,6 +1,6 @@
 import numpy as np
 
-from sos4hjb.polynomials.variable import Variable, _raise_if_not_nonnegative_int
+from sos4hjb.polynomials.variable import Variable
 
 class BasisVector:
     '''
@@ -14,16 +14,16 @@ class BasisVector:
     
     def __init__(self, power_dict):
         for variable, power in power_dict.items():
-            _raise_if_not_variable(variable)
-            _raise_if_not_nonnegative_int(power, 'power')
+            self._verify_variable(variable)
+            self._verify_power(power)
         self.power_dict = {v: p for v, p in power_dict.items() if p != 0}
     
     def __getitem__(self, variable):
         return self.power_dict[variable] if variable in self.power_dict else 0
         
     def __setitem__(self, variable, power):
-        _raise_if_not_variable(variable)
-        _raise_if_not_nonnegative_int(power, 'power')
+        self._verify_variable(variable)
+        self._verify_power(power)
         if power == 0:
             self.power_dict.pop(variable, None)
         else:
@@ -48,6 +48,7 @@ class BasisVector:
         return len(self.power_dict)
 
     def __contains__(self, variable):
+        self._verify_variable(variable)
         return variable in self.power_dict
 
     def __iter__(self):
@@ -77,12 +78,16 @@ class BasisVector:
     def _repr(variable, power):
         return f'({variable},{power})'
 
-    def _raise_if_multiplied_by_different_type(self, vector):
+    @ staticmethod
+    def _verify_variable(variable):
+        if not isinstance(variable, Variable):
+            raise TypeError(f'variable must be of Variable type, got {type(variable).__name__}.')
+
+    @ staticmethod
+    def _verify_power(power):
+        if power % 1 or power < 0:
+            raise ValueError(f'power must be a nonnegative integer, got {power}.')
+
+    def _verify_multiplicand(self, vector):
         if not isinstance(vector, type(self)):
             raise TypeError(f'cannot multiply {type(self).__name__} with {type(vector).__name__}.')
-
-def _raise_if_not_variable(variable):
-    if not isinstance(variable, Variable):
-        raise TypeError(f'variable must be of Variable type, got {type(variable).__name__}.')
-
-
