@@ -1,4 +1,5 @@
 import numpy as np
+from math import prod
 from copy import deepcopy
 
 from sos4hjb.polynomials.basis_vector import BasisVector
@@ -14,7 +15,8 @@ class Polynomial:
     '''
 
     def __init__(self, coef_dict):
-        self.coef_dict = {vector: coef for vector, coef in coef_dict.items() if coef != 0}
+        _raise_if_multiple_type_basis(coef_dict.keys())
+        self.coef_dict = {v: c for v, c in coef_dict.items() if c != 0}
 
     def __getitem__(self, vector):
         return self.coef_dict[vector] if vector in self.coef_dict else 0
@@ -24,6 +26,7 @@ class Polynomial:
             self.coef_dict.pop(vector, None)
         else:
             self.coef_dict[vector] = coef
+            _raise_if_multiple_type_basis(self.vectors)
 
     def __len__(self):
         return len(self.coef_dict)
@@ -34,11 +37,9 @@ class Polynomial:
     def __iter__(self):
         return iter(self.coef_dict.items())
 
-    # Currently allows addition of monomials of different type.
     def __add__(self, poly):
         vectors = set(self.vectors + poly.vectors)
-        coef_dict = {vector: self[vector] + poly[vector] for vector in vectors}
-        return Polynomial(coef_dict)
+        return Polynomial({v: self[v] + poly[v] for v in vectors})
 
     def __iadd__(self, poly):
         return self + poly
@@ -49,42 +50,36 @@ class Polynomial:
     def __isub__(self, poly):
         return self - poly
 
-    # Broken multiplication of monomials of different type.
     def __mul__(self, other):
 
-        # If multiplication by a scalar.
-        coef_type = (float, int, np.float64, np.int64)
-        if isinstance(other, coef_type):
-            return Polynomial({vector: coef * other for vector, coef in self})
+        # Multiplication by a scalar.
+        scalar = (float, int, np.float64, np.int64)
+        if isinstance(other, scalar):
+            return Polynomial({v: c * other for v, c in self})
 
-        # If multiplication by another polynomial.
-        return Polynomial({vs * vo: cs * co for vs, cs in self for vo, co in other})
+        # Multiplication by a polynomial.
+        return sum([(vs * vo) * (cs * co) for vs, cs in self for vo, co in other], Polynomial({}))
 
-    def __imul__(self, poly):
-        return self * poly
+    def __imul__(self, other):
+        return self * other
 
     def __pow__(self, power):
 
-        # 0 ** power = 0.
-        if len(self) == 0:
-            return Polynomial({})
-
-        # poly ** 0 = 1 (note that 0 ** 0 is already ruled out).
+        # poly ** 0 = 1, the case 0 ** 0 is left undefined.
         if power == 0:
-            vector_type = type(list(self.coef_dict)[0])
+            if len(self) == 0:
+                raise ValueError('Undefined result for 0 ** 0.')
+            vector_type = type(self.vectors[0])
             return Polynomial({vector_type({}): 1})
 
         # Fall back to the multiplication method.
-        poly = deepcopy(self)
-        for i in range(power - 1):
-            poly *= self
-        return poly
+        return prod([self] * (power - 1), start=self)
 
-    def derivative(v):
-        pass
+    def derivative(self, variable):
+        return sum([v.derivative(variable) * c for v, c in self], Polynomial({}))
 
-    def primitive(v):
-        pass
+    def primitive(self, variable):
+        return sum([v.primitive(variable) * c for v, c in self], Polynomial({}))
 
     def __repr__(self):
 
@@ -124,3 +119,8 @@ class Polynomial:
     @property
     def degree(self):
         return max(v.degree for v in self.vectors)
+
+def _raise_if_multiple_type_basis(basis):
+    basis_types = set(type(v).__name__ for v in basis)
+    if len(basis_types) > 1:
+        raise TypeError(f'basis vectors must have same type, got {basis_types}.')
