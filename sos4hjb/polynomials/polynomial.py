@@ -28,6 +28,12 @@ class Polynomial:
             self.coef_dict[vector] = coef
             self._verify_vectors(self.vectors)
 
+    def __eq__(self, poly):
+        return self.coef_dict == poly.coef_dict
+    
+    def __ne__(self, poly):
+        return not self == poly
+
     def __len__(self):
         return len(self.coef_dict)
 

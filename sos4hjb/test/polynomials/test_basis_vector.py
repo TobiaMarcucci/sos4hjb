@@ -80,12 +80,14 @@ class TestBasisVector(unittest.TestCase):
         x = Variable('x')
         y = Variable('y')
         z = Variable('z')
-        u = BasisVector({x: 5, y: 2, z: 3})
-        v = BasisVector({x: 5, y: 2, z: 3})
-        w = BasisVector({x: 5, z: 3})
-        self.assertTrue(u == v)
-        self.assertTrue(u != w)
-        self.assertTrue(v != w)
+        v1 = BasisVector({x: 5, y: 2, z: 3})
+        v2 = BasisVector({y: 2, x: 5, z: 3})
+        v3 = BasisVector({x: 5, z: 3})
+        v4 = BasisVector({x: 5, y: 0, z: 3})
+        self.assertTrue(v1 == v2)
+        self.assertTrue(v1 != v3)
+        self.assertTrue(v2 != v3)
+        self.assertTrue(v3 == v4)
 
     def test_len(self):
 
@@ -122,3 +124,7 @@ class TestBasisVector(unittest.TestCase):
         x3 = Variable('x', 3)
         v = BasisVector({x: 5, x3: 2})
         self.assertEqual(v.__repr__(), '(x,5)(x_{3},2)')
+
+        # 1 if all the powers are zero.
+        v = BasisVector({})
+        self.assertEqual(v.__repr__(), '1')

@@ -57,6 +57,7 @@ class ChebyshevVector(BasisVector):
 
     @staticmethod
     def _repr(variable, power):
+        assert power != 0
         return f'T_{{{power}}}({variable})'
 
     @staticmethod

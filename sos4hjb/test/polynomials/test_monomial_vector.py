@@ -58,3 +58,7 @@ class TestMonomialVector(unittest.TestCase):
         x3 = Variable('x', 3)
         m = MonomialVector({x: 5, x3: 2})
         self.assertEqual(m.__repr__(), 'x^{5}x_{3}^{2}')
+
+        # Suppress power equal to 1.
+        m = MonomialVector({x: 5, x3: 1})
+        self.assertEqual(m.__repr__(), 'x^{5}x_{3}')
