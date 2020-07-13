@@ -39,9 +39,9 @@ class Variable:
     def _repr_latex_(self):
         return '$' + self.__repr__() + '$'
 
-    @staticmethod
-    def multivariate(name, size): 
-        return [Variable(name, index=i) for i in range(1, size + 1)]
+    @classmethod
+    def multivariate(cls, name, size):
+        return [cls(name, index=i) for i in range(1, size + 1)]
 
     @ staticmethod
     def _verify_name(name):
