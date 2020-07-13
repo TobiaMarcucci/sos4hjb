@@ -16,7 +16,7 @@ class Polynomial:
 
     def __init__(self, coef_dict):
         self._verify_vectors(coef_dict.keys())
-        self.coef_dict = {v: c for v, c in coef_dict.items() if soft_bool(c != 0)}
+        self.coef_dict = {v: c for v, c in coef_dict.items() if not_false(c != 0)}
 
     def __getitem__(self, vector):
         return self.coef_dict[vector] if vector in self.coef_dict else 0
@@ -39,6 +39,9 @@ class Polynomial:
 
     def __iter__(self):
         return iter(self.coef_dict.items())
+
+    def __call__(self, evaluation_dict):
+        return sum(c * v(evaluation_dict) for v, c in self)
 
     def __add__(self, poly):
         vectors = set(self.vectors + poly.vectors)
@@ -95,8 +98,8 @@ class Polynomial:
         for vector, coef in self:
 
             # Represent coefficient if different from 1, or if vector is 1.
-            addend = '+' if len(addends) > 0 and soft_bool(coef > 0) else ''
-            if soft_bool(coef != 1) or len(vector) == 0:
+            addend = '+' if len(addends) > 0 and not_false(coef > 0) else ''
+            if not_false(coef != 1) or len(vector) == 0:
                 addend += str(coef)
 
             # Do not represent vector if 1.
@@ -143,5 +146,5 @@ class Polynomial:
         if len(vector_types) > 1:
             raise TypeError(f'basis vectors must have same type, got {vector_types}.')
 
-def soft_bool(a):
+def not_false(a):
     return a if isinstance(a, bool) else True

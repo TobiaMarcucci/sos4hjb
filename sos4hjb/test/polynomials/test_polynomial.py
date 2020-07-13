@@ -88,12 +88,36 @@ class TestPolynomial(unittest.TestCase):
         with self.assertRaises(TypeError):
             p[c] = 5
 
+    def test_call(self):
+
+        # Monomial.
+        x = Variable('x')
+        y = Variable('y')
+        z = Variable('z')
+        p = Polynomial({
+            MonomialVector({x: 2, y: 2}): 3.5,
+            MonomialVector({x: 3, z: 5}): .5
+            })
+        eval_dict = {x: 2, y: .3, z: 1.5}
+        value = 3.5 * (2 ** 2 * .3 ** 2)
+        value += .5 * (2 ** 3 * 1.5 ** 5)
+        self.assertEqual(p(eval_dict), value)
+
+        # Chebyshev.
+        p = Polynomial({
+            ChebyshevVector({x: 2, y: 2}): 3.5,
+            ChebyshevVector({x: 3, z: 5}): .5
+            })
+        T = ChebyshevVector._call_univariate
+        value = 3.5 * (T(2, 2) * T(2, .3))
+        value += .5 * (T(3, 2) * T(5, 1.5))
+        self.assertEqual(p(eval_dict), value)
+
     def test_eq_ne(self):
 
         for vector_type in vector_types:
 
             # Comparisons with different lengths.
-
             x = Variable('x')
             y = Variable('y')
             v0 = vector_type({x: 4, y: 1})
