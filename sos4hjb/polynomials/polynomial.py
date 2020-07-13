@@ -16,13 +16,13 @@ class Polynomial:
 
     def __init__(self, coef_dict):
         self._verify_vectors(coef_dict.keys())
-        self.coef_dict = {v: c for v, c in coef_dict.items() if not_false(c != 0)}
+        self.coef_dict = {v: c for v, c in coef_dict.items() if optimistic(c != 0)}
 
     def __getitem__(self, vector):
         return self.coef_dict[vector] if vector in self.coef_dict else 0
 
     def __setitem__(self, vector, coef):
-        if coef == 0:
+        if pessimistic(coef == 0):
             self.coef_dict.pop(vector, None)
         else:
             self.coef_dict[vector] = coef
@@ -98,8 +98,8 @@ class Polynomial:
         for vector, coef in self:
 
             # Represent coefficient if different from 1, or if vector is 1.
-            addend = '+' if len(addends) > 0 and not_false(coef > 0) else ''
-            if not_false(coef != 1) or len(vector) == 0:
+            addend = '+' if len(addends) > 0 and optimistic(coef > 0) else ''
+            if optimistic(coef != 1) or len(vector) == 0:
                 addend += str(coef)
 
             # Do not represent vector if 1.
@@ -154,5 +154,8 @@ class Polynomial:
         if len(vector_types) > 1:
             raise TypeError(f'basis vectors must have same type, got {vector_types}.')
 
-def not_false(a):
+def optimistic(a):
     return a if isinstance(a, bool) else True
+
+def pessimistic(a):
+    return a if isinstance(a, bool) else False
