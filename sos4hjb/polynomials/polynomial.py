@@ -16,7 +16,7 @@ class Polynomial:
 
     def __init__(self, coef_dict):
         self._verify_vectors(coef_dict.keys())
-        self.coef_dict = {v: c for v, c in coef_dict.items() if c != 0}
+        self.coef_dict = {v: c for v, c in coef_dict.items() if soft_bool(c != 0)}
 
     def __getitem__(self, vector):
         return self.coef_dict[vector] if vector in self.coef_dict else 0
@@ -87,7 +87,6 @@ class Polynomial:
     def __repr__(self):
 
         # Represent polynomial as 0 if all the coefficients are 0.
-        assert not 0 in self.coefficients
         if len(self) == 0:
             return '0'
 
@@ -96,8 +95,8 @@ class Polynomial:
         for vector, coef in self:
 
             # Represent coefficient if different from 1, or if vector is 1.
-            addend = '+' if coef > 0 and len(addends) > 0 else ''
-            if coef != 1 or len(vector) == 0:
+            addend = '+' if len(addends) > 0 and soft_bool(coef > 0) else ''
+            if soft_bool(coef != 1) or len(vector) == 0:
                 addend += str(coef)
 
             # Do not represent vector if 1.
@@ -116,18 +115,33 @@ class Polynomial:
         return list(self.coef_dict)
 
     @property
+    def variables(self):
+        return list(set(var for vec in self.vectors for var in vec.variables))
+
+    @property
     def coefficients(self):
         return list(self.coef_dict.values())
 
     @property
     def degree(self):
-        return max(v.degree for v in self.vectors)
+        return max(v.degree for v in self.vectors) if len(self) > 0 else 0
+
+    @property
+    def is_odd(self):
+        return all(v.is_odd for v in self.vectors) if len(self) > 0 else False
+
+    @property
+    def is_even(self):
+        return all(v.is_even for v in self.vectors)
 
     @staticmethod
     def _verify_vectors(vectors):
         for vector in vectors:
             if not issubclass(type(vector), BasisVector):
-                raise TypeError(f'basis vectors must be subclasses of BasisVector.')
+                raise TypeError(f'basis vectors must be subclasses of BasisVector, got {type(vector).__name__}')
         vector_types = set(type(v).__name__ for v in vectors)
         if len(vector_types) > 1:
             raise TypeError(f'basis vectors must have same type, got {vector_types}.')
+
+def soft_bool(a):
+    return a if isinstance(a, bool) else True

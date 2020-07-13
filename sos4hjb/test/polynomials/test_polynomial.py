@@ -133,8 +133,9 @@ class TestPolynomial(unittest.TestCase):
 
             x = Variable('x')
             y = Variable('y')
+            z = Variable('z')
             v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
+            v1 = vector_type({x: 5, z: 2})
             v2 = vector_type({x: 6})
             coef_dict = {v0: 5, v1: 2.5, v2: 3}
             p = Polynomial(coef_dict)
@@ -142,6 +143,7 @@ class TestPolynomial(unittest.TestCase):
                 self.assertEqual(c, coef_dict[v])
             self.assertEqual(set(p.vectors), set(coef_dict))
             self.assertEqual(set(p.coefficients), set(coef_dict.values()))
+            self.assertEqual(set(p.variables), set([x, y, z]))
 
     def test_add_sub(self):
 
@@ -347,14 +349,58 @@ class TestPolynomial(unittest.TestCase):
         
         for vector_type in vector_types:
 
+            # Degrees 8 and 5.
             x = Variable('x')
             y = Variable('y')
             v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
+            v1 = vector_type({x: 5, y: 3})
             p = Polynomial({v0: 2.5, v1: 3})
-            self.assertEqual(p.degree, 7)
+            self.assertEqual(p.degree, 8)
             p[v1] = 0
             self.assertEqual(p.degree, 5)
+
+            # Degree 0.
+            v = vector_type({})
+            p = Polynomial({v: 2.5})
+            self.assertEqual(p.degree, 0)
+
+            # Degree 0 for empty polynomial.
+            p = Polynomial({})
+            self.assertEqual(p.degree, 0)
+
+    def test_is_odd_is_even(self):
+        
+        for vector_type in vector_types:
+
+            # Even.
+            x = Variable('x')
+            y = Variable('y')
+            v0 = vector_type({x: 4, y: 2})
+            v1 = vector_type({x: 1, y: 1})
+            p = Polynomial({v0: 2.5, v1: 3})
+            self.assertTrue(p.is_even)
+            self.assertFalse(p.is_odd)
+
+            # Not even nor odd.
+            v0[y] += 1
+            self.assertFalse(p.is_odd)
+            self.assertFalse(p.is_even)
+
+            # Odd.
+            v1[y] += 1
+            self.assertTrue(p.is_odd)
+            self.assertFalse(p.is_even)
+
+            # Degree 0.
+            v = vector_type({})
+            p = Polynomial({v: 1})
+            self.assertTrue(p.is_even)
+            self.assertFalse(p.is_odd)
+
+            # Empty polynomial is 0, hence even.
+            p = Polynomial({})
+            self.assertTrue(p.is_even)
+            self.assertFalse(p.is_odd)
 
     def test_repr(self):
 
