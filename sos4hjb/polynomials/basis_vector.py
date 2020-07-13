@@ -1,4 +1,5 @@
 import numpy as np
+from itertools import combinations
 
 from sos4hjb.polynomials.variable import Variable
 
@@ -69,6 +70,34 @@ class BasisVector:
     @property
     def degree(self):
         return sum(self.powers)
+
+    @property
+    def is_odd(self):
+        return self.degree % 2
+
+    @property
+    def is_even(self):
+        return not self.is_odd
+
+    @classmethod
+    def _vectors_of_degree(cls, variables, degree):
+        positions = len(variables) + degree - 1
+        breaks = len(variables) - 1
+        vectors = []
+        for c in combinations(range(positions), breaks):
+            c = (- 1, *c, positions)
+            powers = [p - q - 1 for q, p in zip(c, c[1:])]
+            vectors.append(cls(dict(zip(variables, powers))))
+        return vectors
+
+    @classmethod
+    def construct_basis(cls, variables, degree, even=True, odd=True):
+        cls._verify_power(degree)
+        vectors = []
+        for d in range(degree + 1):
+            if (even and d % 2 == 0) or (odd and d % 2):
+                vectors += cls._vectors_of_degree(variables, d)
+        return vectors
 
     @staticmethod
     def _repr(variable, power):

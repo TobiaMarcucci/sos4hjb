@@ -109,14 +109,93 @@ class TestBasisVector(unittest.TestCase):
         self.assertEqual(set(vector.variables), set(power_dict))
         self.assertEqual(set(vector.powers), set(power_dict.values()))
 
-    def test_degree(self):
+    def test_degree_is_odd_is_even(self):
 
+        # Odd.
         v = BasisVector({})
         self.assertEqual(v.degree, 0)
         x = Variable('x')
         y = Variable('y')
         v = BasisVector({x: 5, y: 2})
         self.assertEqual(v.degree, 7)
+        self.assertTrue(v.is_odd)
+        self.assertFalse(v.is_even)
+
+        # Even.
+        v[y] = 3
+        self.assertEqual(v.degree, 8)
+        self.assertTrue(v.is_even)
+        self.assertFalse(v.is_odd)
+
+        # 0 is even.
+        v = BasisVector({})
+        self.assertEqual(v.degree, 0)
+        self.assertTrue(v.is_even)
+        self.assertFalse(v.is_odd)
+
+    def test_construct_basis(self):
+
+        # 2 variables, 3rd degree. Even and odd.
+        x = Variable.multivariate('x', 2)
+        degree = 3
+        basis = BasisVector.construct_basis(x, degree)
+        basis_powers = [(0, 0), (1, 0), (0, 1), (2, 0), (0, 2), (1, 1), (3, 0),
+                        (0, 3), (2, 1), (1, 2)]
+        self._test_basis_by_powers(x, basis, basis_powers)
+
+        # 2 variables, 3rd degree. Even only.
+        basis = BasisVector.construct_basis(x, degree, odd=False)
+        basis_powers = [(0, 0), (2, 0), (0, 2), (1, 1)]
+        self._test_basis_by_powers(x, basis, basis_powers)
+
+        # 2 variables, 3rd degree. Odd only.
+        basis = BasisVector.construct_basis(x, degree, even=False)
+        basis_powers = [(1, 0), (0, 1), (3, 0), (0, 3), (2, 1), (1, 2)]
+        self._test_basis_by_powers(x, basis, basis_powers)
+
+        # 3 variables, 2nd degree. Even and odd.
+        x = Variable.multivariate('x', 3)
+        degree = 2
+        basis = BasisVector.construct_basis(x, degree)
+        basis_powers = [(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1), (2, 0, 0),
+                        (0, 2, 0), (0, 0, 2), (1, 1, 0), (0, 1, 1), (1, 0, 1)]
+        self._test_basis_by_powers(x, basis, basis_powers)
+
+        # 3 variables, 2nd degree. Even only.
+        basis = BasisVector.construct_basis(x, degree, odd=False)
+        basis_powers = [(0, 0, 0), (2, 0, 0), (0, 2, 0), (0, 0, 2), (1, 1, 0),
+                        (0, 1, 1), (1, 0, 1)]
+        self._test_basis_by_powers(x, basis, basis_powers)
+
+        # 3 variables, 2nd degree. Odd only.
+        basis = BasisVector.construct_basis(x, degree, even=False)
+        basis_powers = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
+        self._test_basis_by_powers(x, basis, basis_powers)
+
+        # 0 degree.
+        degree = 0
+        basis = BasisVector.construct_basis(x, degree)
+        basis_powers = [(0, 0, 0)]
+        self._test_basis_by_powers(x, basis, basis_powers)
+        basis = BasisVector.construct_basis(x, degree, odd=False)
+        self._test_basis_by_powers(x, basis, basis_powers)
+        basis = BasisVector.construct_basis(x, degree, even=False)
+        basis_powers = []
+        self._test_basis_by_powers(x, basis, basis_powers)
+
+        # Negative degree.
+        with self.assertRaises(ValueError):
+            basis = BasisVector.construct_basis(x, -3)
+
+        # Float degree.
+        with self.assertRaises(ValueError):
+            basis = BasisVector.construct_basis(x, 3.5)
+
+    def _test_basis_by_powers(self, variables, basis, basis_powers):
+        self.assertEqual(len(basis), len(basis_powers))
+        for powers in basis_powers:
+            v = BasisVector(dict(zip(variables, powers)))
+            self.assertTrue(v in basis)
 
     def test_repr(self):
 
