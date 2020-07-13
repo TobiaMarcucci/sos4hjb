@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 
 from sos4hjb.polynomials import (Variable, BasisVector, MonomialVector,
                                           ChebyshevVector, Polynomial)
@@ -425,6 +426,19 @@ class TestPolynomial(unittest.TestCase):
             p = Polynomial({})
             self.assertTrue(p.is_even)
             self.assertFalse(p.is_odd)
+
+    def test_quadratic_form(self):
+
+        for vector_type in vector_types:
+
+            x = Variable.multivariate('x', 2)
+            basis = vector_type.construct_basis(x, 1)
+            Q = np.array([[1, 2, 3], [2, 4, 5], [3, 5, 6]])
+            p = Polynomial.quadratic_form(basis, Q)
+            p_target = basis[0] * basis[0] + (basis[0] * basis[1]) * 4 + \
+                       (basis[0] * basis[2]) * 6 + (basis[1] * basis[1]) * 4 + \
+                       (basis[1] * basis[2]) * 10 + (basis[2] * basis[2]) * 6
+            self.assertEqual(p, p_target)
 
     def test_repr(self):
 

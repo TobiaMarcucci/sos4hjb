@@ -137,6 +137,14 @@ class Polynomial:
     def is_even(self):
         return all(v.is_even for v in self.vectors)
 
+    @classmethod
+    def quadratic_form(cls, basis, Q):
+        p = cls({})
+        for i, bi in enumerate(basis):
+            for j, bj in enumerate(basis):
+                p += (bi * bj) * Q[i, j]
+        return p
+
     @staticmethod
     def _verify_vectors(vectors):
         for vector in vectors:
