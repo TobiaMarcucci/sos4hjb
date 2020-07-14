@@ -79,25 +79,25 @@ class TestChebyshevVector(unittest.TestCase):
         self.assertEqual(p[ChebyshevVector({x: 5, y: 1})], 8)
         self.assertEqual(p[ChebyshevVector({x: 5, y: 3})], 8)
 
-    def test_primitive(self):
+    def test_integral(self):
 
         # Power 0.
         x = Variable('x')
         y = Variable('y')
         z = Variable('z')
         c = ChebyshevVector({y: 1, z: 3})
-        p = c.primitive(x)
+        p = c.integral(x)
         self.assertEqual(len(p), 1)
         self.assertEqual(p[ChebyshevVector({x: 1, y: 1, z: 3})], 1)
 
         # Power 1.
-        p = c.primitive(y)
+        p = c.integral(y)
         self.assertEqual(len(p), 2)
         self.assertEqual(p[ChebyshevVector({z: 3})], 1 / 4)
         self.assertEqual(p[ChebyshevVector({y: 2, z: 3})], 1 / 4)
 
         # Power > 1.
-        p = c.primitive(z)
+        p = c.integral(z)
         self.assertEqual(len(p), 2)
         self.assertEqual(p[ChebyshevVector({y: 1, z: 2})], - 1 / 4)
         self.assertEqual(p[ChebyshevVector({y: 1, z: 4})], 1 / 8)

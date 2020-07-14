@@ -44,16 +44,16 @@ class ChebyshevVector(BasisVector):
                 derivative[cheb] = power if q == 0 else power * 2
         return derivative
 
-    def primitive(self, variable):
+    def integral(self, variable):
         power = self[variable]
-        primitive = Polynomial({})
+        integral = Polynomial({})
         cheb = deepcopy(self)
         cheb[variable] = power + 1
-        primitive[cheb] = .5 / (1 + power)
+        integral[cheb] = .5 / (1 + power)
         cheb = deepcopy(self)
         cheb[variable] = abs(power - 1)
-        primitive[cheb] += .25 if power == 1 else .5 / (1 - power)
-        return primitive
+        integral[cheb] += .25 if power == 1 else .5 / (1 - power)
+        return integral
 
     @staticmethod
     def _repr(variable, power):

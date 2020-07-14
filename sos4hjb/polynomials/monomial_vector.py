@@ -30,7 +30,7 @@ class MonomialVector(BasisVector):
             monomial[variable] -= 1
         return Polynomial({monomial: power})
 
-    def primitive(self, variable):
+    def integral(self, variable):
         monomial = deepcopy(self)
         monomial[variable] += 1
         return Polynomial({monomial: 1 / (self[variable] + 1)})

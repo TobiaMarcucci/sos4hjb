@@ -315,34 +315,46 @@ class TestPolynomial(unittest.TestCase):
             p_abs = Polynomial({v0: 1 / 3, v1: 5.2, v2: .22233})
             self.assertEqual(abs(p), p_abs)
 
-    def test_derivative(self):
+    def test_derivative_jacobian(self):
         
-        # Monomial.
+        # Monomial derivative.
         x = Variable('x')
         y = Variable('y')
         m0 = MonomialVector({x: 4, y: 1})
         m1 = MonomialVector({x: 5, y: 2})
         p = Polynomial({m0: 2.5, m1: -3})
+        self.assertEqual(p.derivative([]), p)
         px = Polynomial({
             MonomialVector({x: 3, y: 1}): 10,
             MonomialVector({x: 4, y: 2}): - 15
             })
-        self.assertEqual(p.derivative(x), px)
+        self.assertEqual(p.derivative([x]), px)
         py = Polynomial({
             MonomialVector({x: 4}): 2.5,
             MonomialVector({x: 5, y: 1}): - 6
             })
-        self.assertEqual(p.derivative(y), py)
+        self.assertEqual(p.derivative([y]), py)
+        pxy = Polynomial({
+            MonomialVector({x: 3}): 10,
+            MonomialVector({x: 4, y: 1}): - 30
+            })
+        self.assertEqual(p.derivative([x, y]), pxy)
+        self.assertEqual(p.derivative([y, x]), pxy)
         z = Variable('z')
         pz = Polynomial({})
-        self.assertEqual(p.derivative(z), pz)
+        self.assertEqual(p.derivative([z]), pz)
 
-        # Chebyshev.
+        # Monomial Jacobian.
+        for pi, qi in zip(p.jacobian([z, x, y]), np.array([pz, px, py])):
+            self.assertEqual(pi, qi)
+
+        # Chebyshev derivative.
         x = Variable('x')
         y = Variable('y')
         c0 = ChebyshevVector({x: 4, y: 1})
         c1 = ChebyshevVector({x: 5, y: 2})
         p = Polynomial({c0: - 2.5, c1: 3})
+        self.assertEqual(p.derivative([]), p)
         px = Polynomial({
             ChebyshevVector({x: 1, y: 1}): - 20,
             ChebyshevVector({x: 3, y: 1}): - 20,
@@ -350,40 +362,64 @@ class TestPolynomial(unittest.TestCase):
             ChebyshevVector({x: 2, y: 2}): 30,
             ChebyshevVector({x: 4, y: 2}): 30,
             })
-        self.assertEqual(p.derivative(x), px)
+        self.assertEqual(p.derivative([x]), px)
         py = Polynomial({
             ChebyshevVector({x: 4}): - 2.5,
             ChebyshevVector({x: 5, y: 1}): 12,
             })
-        self.assertEqual(p.derivative(y), py)
+        self.assertEqual(p.derivative([y]), py)
+        pxy = Polynomial({
+            ChebyshevVector({x: 1}): - 20,
+            ChebyshevVector({x: 3}): - 20,
+            ChebyshevVector({x: 0, y: 1}): 60,
+            ChebyshevVector({x: 2, y: 1}): 120,
+            ChebyshevVector({x: 4, y: 1}): 120,
+            })
+        self.assertEqual(p.derivative([x, y]), pxy)
+        self.assertEqual(p.derivative([y, x]), pxy)
         z = Variable('z')
         pz = Polynomial({})
-        self.assertEqual(p.derivative(z), pz)
+        self.assertEqual(p.derivative([z]), pz)
 
-    def test_primitive(self):
+        # Chebyshev Jacobian.
+        for pi, qi in zip(p.jacobian([z, x, y]), np.array([pz, px, py])):
+            self.assertEqual(pi, qi)
 
-        # Monomial.
+    def test_integral(self):
+
+        # Monomial indefinite.
         x = Variable('x')
         y = Variable('y')
         m0 = MonomialVector({x: 4, y: 1})
         m1 = MonomialVector({x: 5, y: 2})
         p = Polynomial({m0: - 2.5, m1: 3})
+        self.assertEqual(p.integral([]), p)
         px = Polynomial({
             MonomialVector({x: 5, y: 1}): - .5,
             MonomialVector({x: 6, y: 2}): .5
             })
-        self.assertEqual(p.primitive(x), px)
+        self.assertEqual(p.integral([x]), px)
         py = Polynomial({
             MonomialVector({x: 4, y: 2}): - 1.25,
             MonomialVector({x: 5, y: 3}): 1
             })
-        self.assertEqual(p.primitive(y), py)
+        self.assertEqual(p.integral([y]), py)
+        pxy = Polynomial({
+            MonomialVector({x: 5, y: 2}): - .25,
+            MonomialVector({x: 6, y: 3}): .5 / 3
+            })
+        self.assertEqual(p.integral([x, y]), pxy)
+        self.assertEqual(p.integral([y, x]), pxy)
         z = Variable('z')
         pz = Polynomial({
             MonomialVector({x: 4, y: 1, z: 1}): - 2.5,
             MonomialVector({x: 5, y: 2, z: 1}): 3,
             })
-        self.assertEqual(p.primitive(z), pz)
+        self.assertEqual(p.integral([z]), pz)
+
+        # Monomial definite.
+        lb = {x: -3, y: -2, z: -1}
+        ub = {x: 1, y: 2, z: 3}
 
         # Chebyshev.
         x = Variable('x')
@@ -391,26 +427,39 @@ class TestPolynomial(unittest.TestCase):
         c0 = ChebyshevVector({x: 2, y: 1})
         c1 = ChebyshevVector({x: 5, y: 2})
         p = Polynomial({c0: 3, c1: -6})
+        self.assertEqual(p.integral([]), p)
         px = Polynomial({
             ChebyshevVector({x: 3, y: 1}): .5,
             ChebyshevVector({x: 1, y: 1}): - 1.5,
             ChebyshevVector({x: 6, y: 2}): - .5,
             ChebyshevVector({x: 4, y: 2}): .75
             })
-        self.assertEqual(p.primitive(x), px)
+        self.assertEqual(p.integral([x]), px)
         py = Polynomial({
             ChebyshevVector({x: 2}): .75,
             ChebyshevVector({x: 2, y: 2}): .75,
             ChebyshevVector({x: 5, y: 3}): - 1,
             ChebyshevVector({x: 5, y: 1}): 3
             })
-        self.assertEqual(p.primitive(y), py)
+        self.assertEqual(p.integral([y]), py)
+        pxy = Polynomial({
+            ChebyshevVector({x: 3}): .125,
+            ChebyshevVector({x: 3, y: 2}): .125,
+            ChebyshevVector({x: 1}): - .375,
+            ChebyshevVector({x: 1, y: 2}): - .375,
+            ChebyshevVector({x: 6, y: 3}): - 1 / 12,
+            ChebyshevVector({x: 6, y: 1}): .25,
+            ChebyshevVector({x: 4, y: 3}): .125,
+            ChebyshevVector({x: 4, y: 1}): - .375,
+            })
+        self.assertEqual(p.integral([x, y]), pxy)
+        self.assertEqual(p.integral([y, x]), pxy)
         z = Variable('z')
         pz = Polynomial({
             ChebyshevVector({x: 2, y: 1, z: 1}): 3,
             ChebyshevVector({x: 5, y: 2, z: 1}): - 6,
             })
-        self.assertEqual(p.primitive(z), pz)
+        self.assertEqual(p.integral([z]), pz)
 
     def test_degree(self):
         

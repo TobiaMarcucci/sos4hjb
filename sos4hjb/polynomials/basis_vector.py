@@ -73,12 +73,12 @@ class BasisVector:
         return sum(self.powers)
 
     @property
-    def is_odd(self):
-        return self.degree % 2
+    def is_even(self):
+        return self.degree % 2 == 0
 
     @property
-    def is_even(self):
-        return not self.is_odd
+    def is_odd(self):
+        return not self.is_even
 
     @classmethod
     def _vectors_of_degree(cls, variables, degree):

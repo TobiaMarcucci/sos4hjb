@@ -88,11 +88,26 @@ class Polynomial:
     def __abs__(self):
         return Polynomial({v: abs(c) for v, c in self})
 
-    def derivative(self, variable):
+    def _derivative(self, variable):
         return sum([v.derivative(variable) * c for v, c in self], Polynomial({}))
 
-    def primitive(self, variable):
-        return sum([v.primitive(variable) * c for v, c in self], Polynomial({}))
+    def derivative(self, variables):
+        derivative = self
+        for variable in variables:
+            derivative = derivative._derivative(variable)
+        return derivative
+
+    def jacobian(self, variables):
+        return [self._derivative(v) for v in variables]
+
+    def _integral(self, variable):
+        return sum([v.integral(variable) * c for v, c in self], Polynomial({}))
+
+    def integral(self, variables):
+        integral = self
+        for variable in variables:
+            integral = integral._integral(variable)
+        return integral
 
     def __repr__(self):
 

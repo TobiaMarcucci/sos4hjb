@@ -43,12 +43,12 @@ class TestMonomialVector(unittest.TestCase):
         m_der = MonomialVector({x: 5, y: 1})
         self.assertEqual(p[m_der], 2)
 
-    def test_primitive(self):
+    def test_integral(self):
 
         x = Variable('x')
         y = Variable('y')
         m = MonomialVector({x: 5, y: 2})
-        p = m.primitive(y)
+        p = m.integral(y)
         m_pr = MonomialVector({x: 5, y: 3})
         self.assertEqual(p[m_pr], 1 / 3)
 
