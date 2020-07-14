@@ -28,11 +28,12 @@ class Polynomial:
             self.coef_dict[vector] = coef
             self._verify_vectors(self.vectors)
 
-    def __eq__(self, poly):
-        return self.coef_dict == poly.coef_dict
+    def __eq__(self, other):
+        other = Polynomial({}) if other == 0 else other
+        return self.coef_dict == other.coef_dict
     
-    def __ne__(self, poly):
-        return not self == poly
+    def __ne__(self, other):
+        return not self == other
 
     def __len__(self):
         return len(self.coef_dict)
@@ -82,7 +83,10 @@ class Polynomial:
         return prod([self] * (power - 1), start=self)
 
     def __round__(self, n=0):
-        return Polynomial({v: getattr(c, '__round__', lambda n: c)(n) for v, c in self})
+        return Polynomial({v: round(c, n) for v, c in self})
+
+    def __abs__(self):
+        return Polynomial({v: abs(c) for v, c in self})
 
     def derivative(self, variable):
         return sum([v.derivative(variable) * c for v, c in self], Polynomial({}))
@@ -158,7 +162,7 @@ class Polynomial:
             raise TypeError(f'basis vectors must have same type, got {vector_types}.')
 
 def optimistic(a):
-    return a if isinstance(a, bool) else True
+    return a if isinstance(a, (bool, np.bool_)) else True
 
 def pessimistic(a):
-    return a if isinstance(a, bool) else False
+    return a if isinstance(a, (bool, np.bool_)) else False

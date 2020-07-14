@@ -133,6 +133,13 @@ class TestPolynomial(unittest.TestCase):
             self.assertTrue(p2 != p3)
             self.assertTrue(p3 == p4)
 
+            # Comparison to 0.
+            self.assertFalse(p1 == 0)
+            self.assertTrue(p1 != 0)
+            p = Polynomial({})
+            self.assertTrue(p == 0)
+            self.assertFalse(p != 0)
+
         # Comparison with different vector type.
         m = MonomialVector({x: 4, y: 1})
         c = ChebyshevVector({x: 4, y: 1})
@@ -282,13 +289,26 @@ class TestPolynomial(unittest.TestCase):
             v0 = vector_type({x: 1, y: 3})
             v1 = vector_type({x: 2, y: 2})
             v2 = vector_type({x: 4, y: 1})
-            p = Polynomial({v0: 1 / 3, v1: 5.2, v2: .22233})
-            p0 = Polynomial({v1: 5})
+            p = Polynomial({v0: 1 / 3, v1: - 5.2, v2: .22233})
+            p0 = Polynomial({v1: - 5})
             self.assertEqual(round(p), p0)
-            p1 = Polynomial({v0: .3, v1: 5.2, v2: .2})
+            p1 = Polynomial({v0: .3, v1: - 5.2, v2: .2})
             self.assertEqual(round(p, 1), p1)
-            p4 = Polynomial({v0: .3333, v1: 5.2, v2: .2223})
+            p4 = Polynomial({v0: .3333, v1: - 5.2, v2: .2223})
             self.assertEqual(round(p, 4), p4)
+
+    def test_abs(self):
+
+        for vector_type in vector_types:
+
+            x = Variable('x')
+            y = Variable('y')
+            v0 = vector_type({x: 1, y: 3})
+            v1 = vector_type({x: 2, y: 2})
+            v2 = vector_type({x: 4, y: 1})
+            p = Polynomial({v0: 1 / 3, v1: - 5.2, v2: .22233})
+            p_abs = Polynomial({v0: 1 / 3, v1: 5.2, v2: .22233})
+            self.assertEqual(abs(p), p_abs)
 
     def test_derivative(self):
         
