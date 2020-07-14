@@ -49,12 +49,15 @@ class TestVariable(unittest.TestCase):
         # Variable without index.
         x = Variable('x')
         self.assertEqual(x.__repr__(), 'x')
+        self.assertEqual(x._repr_latex_(), '$x$')
 
         # Variable with index.
         x1 = Variable('x', 1)
         x11 = Variable('x', 11)
         self.assertEqual(x1.__repr__(), 'x_{1}')
+        self.assertEqual(x1._repr_latex_(), '$x_{1}$')
         self.assertEqual(x11.__repr__(), 'x_{11}')
+        self.assertEqual(x11._repr_latex_(), '$x_{11}$')
 
     def test_multivariate(self):
 

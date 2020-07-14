@@ -280,6 +280,11 @@ class TestPolynomial(unittest.TestCase):
                 self.assertEqual(p ** i, p_pow)
                 p_pow *= p
 
+        # 0 ** 0 is undefined.
+        p = Polynomial({})
+        with self.assertRaises(ValueError):
+            p ** 0
+
     def test_round(self):
 
         for vector_type in vector_types:
@@ -489,29 +494,36 @@ class TestPolynomial(unittest.TestCase):
             p = Polynomial({v0: 2.5, v1: 3})
             r = '2.5' + v0.__repr__() + '+3' + v1.__repr__()
             self.assertEqual(p.__repr__(), r)
+            self.assertEqual(p._repr_latex_(), '$' + r + '$')
 
             # With - signs.
             p = Polynomial({v0: 2.5, v1: - 3})
             r = '2.5' + v0.__repr__() + '-3' + v1.__repr__()
             self.assertEqual(p.__repr__(), r)
+            self.assertEqual(p._repr_latex_(), '$' + r + '$')
             p = Polynomial({v0: - 2.5, v1: 3})
             r = '-2.5' + v0.__repr__() + '+3' + v1.__repr__()
             self.assertEqual(p.__repr__(), r)
+            self.assertEqual(p._repr_latex_(), '$' + r + '$')
 
             # 0 if all the coefficients are 0.
             p = Polynomial({})
             self.assertEqual(p.__repr__(), '0')
+            self.assertEqual(p._repr_latex_(), '$0$')
 
             # Suppress 1 coefficients.
             p = Polynomial({v0: 2.5, v1: 1})
             r = '2.5' + v0.__repr__() + '+' + v1.__repr__()
             self.assertEqual(p.__repr__(), r)
+            self.assertEqual(p._repr_latex_(), '$' + r + '$')
             p = Polynomial({v0: 1, v1: 3.44})
             r = v0.__repr__() + '+3.44' + v1.__repr__()
             self.assertEqual(p.__repr__(), r)
+            self.assertEqual(p._repr_latex_(), '$' + r + '$')
 
             # Vector with zero power.
             v2 = vector_type({})
             p = Polynomial({v2: 5.33, v0: 2, v1: 3})
             r = '5.33+2' + v0.__repr__() + '+3' + v1.__repr__()
             self.assertEqual(p.__repr__(), r)
+            self.assertEqual(p._repr_latex_(), '$' + r + '$')

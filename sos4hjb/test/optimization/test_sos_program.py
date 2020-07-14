@@ -131,6 +131,13 @@ class TestSosProgram(unittest.TestCase):
             p_opt_Q += Polynomial.quadratic_form(basis_o, Q_opt_o)
             self.assertAlmostEqual(p_opt, p_opt_Q)
 
+            # Polynomial of odd degree.
+            prog = SosProgram()
+            basis = vector_type.construct_basis(self.x, 3)
+            p, c = prog.NewFreePolynomial(basis)
+            with self.assertRaises(ValueError):
+                prog.AddSosConstraint(p)
+
             # Polynomial of length 0.
             prog = SosProgram()
             p = Polynomial({})

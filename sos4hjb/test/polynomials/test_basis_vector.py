@@ -203,7 +203,9 @@ class TestBasisVector(unittest.TestCase):
         x3 = Variable('x', 3)
         v = BasisVector({x: 5, x3: 2})
         self.assertEqual(v.__repr__(), '(x,5)(x_{3},2)')
+        self.assertEqual(v._repr_latex_(), '$(x,5)(x_{3},2)$')
 
         # 1 if all the powers are zero.
         v = BasisVector({})
         self.assertEqual(v.__repr__(), '1')
+        self.assertEqual(v._repr_latex_(), '$1$')
