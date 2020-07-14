@@ -273,6 +273,23 @@ class TestPolynomial(unittest.TestCase):
                 self.assertEqual(p ** i, p_pow)
                 p_pow *= p
 
+    def test_round(self):
+
+        for vector_type in vector_types:
+
+            x = Variable('x')
+            y = Variable('y')
+            v0 = vector_type({x: 1, y: 3})
+            v1 = vector_type({x: 2, y: 2})
+            v2 = vector_type({x: 4, y: 1})
+            p = Polynomial({v0: 1 / 3, v1: 5.2, v2: .22233})
+            p0 = Polynomial({v1: 5})
+            self.assertEqual(round(p), p0)
+            p1 = Polynomial({v0: .3, v1: 5.2, v2: .2})
+            self.assertEqual(round(p, 1), p1)
+            p4 = Polynomial({v0: .3333, v1: 5.2, v2: .2223})
+            self.assertEqual(round(p, 4), p4)
+
     def test_derivative(self):
         
         # Monomial.

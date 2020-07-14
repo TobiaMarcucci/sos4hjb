@@ -81,6 +81,9 @@ class Polynomial:
         # Fall back to the multiplication method.
         return prod([self] * (power - 1), start=self)
 
+    def __round__(self, n=0):
+        return Polynomial({v: getattr(c, '__round__', lambda n: c)(n) for v, c in self})
+
     def derivative(self, variable):
         return sum([v.derivative(variable) * c for v, c in self], Polynomial({}))
 
