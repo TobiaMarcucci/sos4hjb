@@ -20,6 +20,7 @@ class BasisVector:
         self.power_dict = {v: p for v, p in power_dict.items() if p != 0}
     
     def __getitem__(self, variable):
+        self._verify_variable(variable)
         return self.power_dict[variable] if variable in self.power_dict else 0
         
     def __setitem__(self, variable, power):

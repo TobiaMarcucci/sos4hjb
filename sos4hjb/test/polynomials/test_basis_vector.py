@@ -45,6 +45,8 @@ class TestBasisVector(unittest.TestCase):
         self.assertEqual(v[y], 2)
         self.assertEqual(v[z], 0)
         self.assertEqual(len(v), 2)
+        with self.assertRaises(TypeError):
+            v['a']
 
         # Setter.
         v[x] = 12
