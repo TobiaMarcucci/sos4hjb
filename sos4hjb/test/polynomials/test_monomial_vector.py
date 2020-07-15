@@ -66,6 +66,38 @@ class TestMonomialVector(unittest.TestCase):
         m_pr = MonomialVector({x: 5, y: 3})
         self.assertEqual(p[m_pr], 1 / 3)
 
+    def test_in_chebyshev_basis(self):
+
+        # Zero-dimensional.
+        m = MonomialVector({})
+        p = Polynomial({ChebyshevVector({}): 1})
+        self.assertEqual(m.in_chebyshev_basis(), p)
+
+        # One-dimensional.
+        x = Variable('x')
+        m = MonomialVector({x: 9})
+        p = Polynomial({
+            ChebyshevVector({x: 1}): 126 / 256,
+            ChebyshevVector({x: 3}): 84 / 256,
+            ChebyshevVector({x: 5}): 36 / 256,
+            ChebyshevVector({x: 7}): 9 / 256,
+            ChebyshevVector({x: 9}): 1 / 256,
+            })
+        self.assertEqual(m.in_chebyshev_basis(), p)
+
+        # Two-dimensional.
+        y = Variable('y')
+        m = MonomialVector({x: 4, y: 3})
+        p = Polynomial({
+            ChebyshevVector({y: 1}): 9 / 32,
+            ChebyshevVector({y: 3}): 3 / 32,
+            ChebyshevVector({x: 2, y: 1}): 12 / 32,
+            ChebyshevVector({x: 2, y: 3}): 4 / 32,
+            ChebyshevVector({x: 4, y: 1}): 3 / 32,
+            ChebyshevVector({x: 4, y: 3}): 1 / 32,
+            })
+        self.assertEqual(m.in_chebyshev_basis(), p)
+
     def test_repr(self):
 
         x = Variable('x')

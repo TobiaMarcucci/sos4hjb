@@ -440,6 +440,38 @@ class TestPolynomial(unittest.TestCase):
                        (basis[1] * basis[2]) * 10 + (basis[2] * basis[2]) * 6
             self.assertEqual(p, p_target)
 
+    def test_in_chebyshev_basis(self):
+
+        # Zero polynomial.
+        p = Polynomial({})
+        self.assertEqual(p.in_chebyshev_basis(), p)
+
+        # Non-zero polynomial.
+        x = Variable('x')
+        y = Variable('y')
+        z = Variable('z')
+        m0 = MonomialVector({x: 4, y: 3})
+        m1 = MonomialVector({x: 1, z: 3})
+        p = Polynomial({m0: 4, m1: 3})
+        p_cheb = m0.in_chebyshev_basis() * 4 + m1.in_chebyshev_basis() * 3
+        self.assertEqual(p.in_chebyshev_basis(), p_cheb)
+
+    def test_in_monomial_basis(self):
+
+        # Zero polynomial.
+        p = Polynomial({})
+        self.assertEqual(p.in_monomial_basis(), p)
+
+        # Non-zero polynomial.
+        x = Variable('x')
+        y = Variable('y')
+        z = Variable('z')
+        m0 = ChebyshevVector({x: 4, y: 3})
+        m1 = ChebyshevVector({x: 1, z: 3})
+        p = Polynomial({m0: 4, m1: 3})
+        p_mon = m0.in_monomial_basis() * 4 + m1.in_monomial_basis() * 3
+        self.assertEqual(p.in_monomial_basis(), p_mon)
+
     def test_repr(self):
 
         for vector_type in vector_types:

@@ -1,6 +1,7 @@
 from math import cos, acos, cosh, acosh
 from copy import deepcopy
 from itertools import product
+from numpy.polynomial.chebyshev import cheb2poly
 
 import sos4hjb.polynomials as poly
 
@@ -49,6 +50,14 @@ class ChebyshevVector(poly.BasisVector):
         cheb[variable] = abs(power - 1)
         integral[cheb] += .25 if power == 1 else .5 / (1 - power)
         return integral
+
+    def in_monomial_basis(self):
+        res = poly.Polynomial({poly.MonomialVector({}): 1})
+        for v, p in self:
+            c = cheb2poly([0] * p + [1])
+            basis = poly.MonomialVector.construct_basis([v], p)
+            res *= poly.Polynomial(dict(zip(basis, c)))
+        return res
 
     @staticmethod
     def _repr(variable, power):

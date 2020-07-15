@@ -106,6 +106,12 @@ class Polynomial:
             integral = integral({v: ub}) - integral({v: lb})
         return integral
 
+    def in_chebyshev_basis(self):
+        return sum([v.in_chebyshev_basis() * c for v, c in self], Polynomial({}))
+
+    def in_monomial_basis(self):
+        return sum([v.in_monomial_basis() * c for v, c in self], Polynomial({}))
+
     def __repr__(self):
 
         # Represent polynomial as 0 if all the coefficients are 0.
