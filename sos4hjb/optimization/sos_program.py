@@ -19,24 +19,24 @@ class SosProgram(MathematicalProgram):
         return p, Q
         
     def NewEvenDegreeSosPolynomial(self, basis, name='Q'):
-        basis_e = [v for v in basis if v.is_even]
-        basis_o = [v for v in basis if v.is_odd]
+        basis_e = [v for v in basis if v.is_even()]
+        basis_o = [v for v in basis if v.is_odd()]
         p_e, Q_e = self.NewSosPolynomial(basis_e, name + '_{e}')
         p_o, Q_o = self.NewSosPolynomial(basis_o, name + '_{o}')
         return p_e + p_o, [Q_e, Q_o]
     
     def AddSosConstraint(self, p, name='Q'):
-        if p.degree % 2:
-            raise ValueError(f'SOS polynomials must have even degree, got degree {p.degree}.')
+        if p.degree() % 2:
+            raise ValueError(f'SOS polynomials must have even degree, got degree {p.degree()}.')
         if len(p) > 0:
-            basis = p.vectors[0].construct_basis(p.variables, p.degree // 2)
+            basis = p.vectors()[0].construct_basis(p.variables(), p.degree() // 2)
         else:
             basis = []
-        if p.is_even:
+        if p.is_even():
             p_sos, Q = self.NewEvenDegreeSosPolynomial(basis, name)
         else:
             p_sos, Q = self.NewSosPolynomial(basis, name)
-        for coef in (p - p_sos).coefficients:
+        for coef in (p - p_sos).coefficients():
             self.AddLinearEqualityConstraint(coef == 0)
         return Q
 

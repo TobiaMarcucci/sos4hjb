@@ -108,32 +108,32 @@ class TestBasisVector(unittest.TestCase):
         vector = BasisVector(power_dict)
         for v, p in vector:
             self.assertEqual(p, power_dict[v])
-        self.assertEqual(set(vector.variables), set(power_dict))
-        self.assertEqual(set(vector.powers), set(power_dict.values()))
+        self.assertEqual(set(vector.variables()), set(power_dict))
+        self.assertEqual(set(vector.powers()), set(power_dict.values()))
 
     def test_degree_is_odd_is_even(self):
 
         # Odd.
         v = BasisVector({})
-        self.assertEqual(v.degree, 0)
+        self.assertEqual(v.degree(), 0)
         x = Variable('x')
         y = Variable('y')
         v = BasisVector({x: 5, y: 2})
-        self.assertEqual(v.degree, 7)
-        self.assertTrue(v.is_odd)
-        self.assertFalse(v.is_even)
+        self.assertEqual(v.degree(), 7)
+        self.assertTrue(v.is_odd())
+        self.assertFalse(v.is_even())
 
         # Even.
         v[y] = 3
-        self.assertEqual(v.degree, 8)
-        self.assertTrue(v.is_even)
-        self.assertFalse(v.is_odd)
+        self.assertEqual(v.degree(), 8)
+        self.assertTrue(v.is_even())
+        self.assertFalse(v.is_odd())
 
         # 0 is even.
         v = BasisVector({})
-        self.assertEqual(v.degree, 0)
-        self.assertTrue(v.is_even)
-        self.assertFalse(v.is_odd)
+        self.assertEqual(v.degree(), 0)
+        self.assertTrue(v.is_even())
+        self.assertFalse(v.is_odd())
 
     def test_construct_basis(self):
 

@@ -46,7 +46,7 @@ class BasisVector:
         return not self == vector
 
     def _hash_tuple(self):
-        assert not 0 in self.powers
+        assert not 0 in self.powers()
         hash_list = sorted((v.name, v.index, p) for v, p in self)
         hash_list.append(type(self).__name__)
         return tuple(hash_list)
@@ -65,25 +65,20 @@ class BasisVector:
     def _repr_latex_(self):
         return '$' + self.__repr__() + '$'
 
-    @property
     def variables(self):
         return list(self.power_dict)
 
-    @property
     def powers(self):
         return list(self.power_dict.values())
 
-    @property
     def degree(self):
-        return sum(self.powers)
+        return sum(self.powers())
 
-    @property
     def is_even(self):
-        return self.degree % 2 == 0
+        return self.degree() % 2 == 0
 
-    @property
     def is_odd(self):
-        return not self.is_even
+        return not self.is_even()
 
     @classmethod
     def _vectors_of_degree(cls, variables, degree):

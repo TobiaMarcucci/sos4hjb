@@ -24,15 +24,15 @@ class TestSosProgram(unittest.TestCase):
             prog = SosProgram()
             basis = vector_type.construct_basis(self.x, 3)
             p, c = prog.NewFreePolynomial(basis)
-            prog.AddLinearConstraint(p(self.zero).to_scalar == 0)
-            prog.AddLinearConstraint(p(self.one).to_scalar == 1)
-            prog.AddLinearConstraint(p(self.two).to_scalar == 2)
+            prog.AddLinearConstraint(p(self.zero).to_scalar() == 0)
+            prog.AddLinearConstraint(p(self.one).to_scalar() == 1)
+            prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             c_opt = result.GetSolution(c)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar, 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar, 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar, 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
 
     def test_new_sos_polynomial(self):
 
@@ -43,14 +43,14 @@ class TestSosProgram(unittest.TestCase):
             prog = SosProgram()
             basis = vector_type.construct_basis(self.x, 3)
             p, Q = prog.NewSosPolynomial(basis)
-            prog.AddLinearCost(p(self.zero).to_scalar)
-            prog.AddLinearConstraint(p(self.one).to_scalar == 1)
-            prog.AddLinearConstraint(p(self.two).to_scalar == 2)
+            prog.AddLinearCost(p(self.zero).to_scalar())
+            prog.AddLinearConstraint(p(self.one).to_scalar() == 1)
+            prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar, 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar, 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar, 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
 
             # Reconstruct polynomial from Gram matrix.
             Q_opt = result.GetSolution(Q)
@@ -61,21 +61,21 @@ class TestSosProgram(unittest.TestCase):
             # Even polynomial.
             prog = SosProgram()
             p, Q = prog.NewEvenDegreeSosPolynomial(basis)
-            prog.AddLinearCost(p(self.zero).to_scalar)
-            prog.AddLinearConstraint(p(self.one).to_scalar == 1)
-            prog.AddLinearConstraint(p(self.two).to_scalar == 2)
+            prog.AddLinearCost(p(self.zero).to_scalar())
+            prog.AddLinearConstraint(p(self.one).to_scalar() == 1)
+            prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar, 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar, 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar, 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
             
             # Reconstruct polynomial from Gram matrices.
             Q_opt_e, Q_opt_o = [result.GetSolution(Qi) for Qi in Q]
             self.assertTrue(self._is_psd(Q_opt_e))
             self.assertTrue(self._is_psd(Q_opt_o))
-            basis_e = [v for v in basis if v.is_even]
-            basis_o = [v for v in basis if v.is_odd]
+            basis_e = [v for v in basis if v.is_even()]
+            basis_o = [v for v in basis if v.is_odd()]
             p_opt_Q = Polynomial.quadratic_form(basis_e, Q_opt_e)
             p_opt_Q += Polynomial.quadratic_form(basis_o, Q_opt_o)
             self.assertAlmostEqual(p_opt, p_opt_Q)
@@ -90,14 +90,14 @@ class TestSosProgram(unittest.TestCase):
             basis = vector_type.construct_basis(self.x, 6)
             p, c = prog.NewFreePolynomial(basis)
             Q = prog.AddSosConstraint(p)
-            prog.AddLinearCost(p(self.zero).to_scalar)
-            prog.AddLinearConstraint(p(self.one).to_scalar == 1)
-            prog.AddLinearConstraint(p(self.two).to_scalar == 2)
+            prog.AddLinearCost(p(self.zero).to_scalar())
+            prog.AddLinearConstraint(p(self.one).to_scalar() == 1)
+            prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar, 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar, 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar, 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
 
             # Reconstruct polynomial from Gram matrix.
             Q_opt = result.GetSolution(Q)
@@ -111,22 +111,22 @@ class TestSosProgram(unittest.TestCase):
             basis = vector_type.construct_basis(self.x, 6, odd=False)
             p, c = prog.NewFreePolynomial(basis)
             Q = prog.AddSosConstraint(p)
-            prog.AddLinearCost(p(self.zero).to_scalar)
-            prog.AddLinearConstraint(p(self.one).to_scalar == 1)
-            prog.AddLinearConstraint(p(self.two).to_scalar == 2)
+            prog.AddLinearCost(p(self.zero).to_scalar())
+            prog.AddLinearConstraint(p(self.one).to_scalar() == 1)
+            prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar, 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar, 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar, 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
 
             # Reconstruct polynomial from Gram matrices.
             Q_opt_e, Q_opt_o = [result.GetSolution(Qi) for Qi in Q]
             self.assertTrue(self._is_psd(Q_opt_e))
             self.assertTrue(self._is_psd(Q_opt_o))
             basis = vector_type.construct_basis(self.x, 3)
-            basis_e = [v for v in basis if v.is_even]
-            basis_o = [v for v in basis if v.is_odd]
+            basis_e = [v for v in basis if v.is_even()]
+            basis_o = [v for v in basis if v.is_odd()]
             p_opt_Q = Polynomial.quadratic_form(basis_e, Q_opt_e)
             p_opt_Q += Polynomial.quadratic_form(basis_o, Q_opt_o)
             self.assertAlmostEqual(p_opt, p_opt_Q)

@@ -26,7 +26,7 @@ class Polynomial:
             self.coef_dict.pop(vector, None)
         else:
             self.coef_dict[vector] = coef
-            self._verify_vectors(self.vectors)
+            self._verify_vectors(self.vectors())
 
     def __eq__(self, other):
         other = Polynomial({}) if other == 0 else other
@@ -45,7 +45,7 @@ class Polynomial:
         return sum([v(evaluation_dict) * c for v, c in self], Polynomial({}))
 
     def __add__(self, poly):
-        vectors = set(self.vectors + poly.vectors)
+        vectors = set(self.vectors() + poly.vectors())
         return Polynomial({v: self[v] + poly[v] for v in vectors})
 
     def __iadd__(self, poly):
@@ -76,7 +76,7 @@ class Polynomial:
         if power == 0:
             if len(self) == 0:
                 raise ValueError('Undefined result for 0 ** 0.')
-            vector_type = type(self.vectors[0])
+            vector_type = type(self.vectors()[0])
             return Polynomial({vector_type({}): 1})
 
         # Fall back to the multiplication method.
@@ -132,35 +132,28 @@ class Polynomial:
     def _repr_latex_(self):
         return '$' + self.__repr__() + '$'
 
-    @property
     def vectors(self):
         return list(self.coef_dict)
 
-    @property
     def variables(self):
-        return list(set(var for vec in self.vectors for var in vec.variables))
+        return list(set(var for vec in self.vectors() for var in vec.variables()))
 
-    @property
     def coefficients(self):
         return list(self.coef_dict.values())
 
-    @property
     def degree(self):
-        return max(v.degree for v in self.vectors) if len(self) > 0 else 0
+        return max(v.degree() for v in self.vectors()) if len(self) > 0 else 0
 
-    @property
     def is_odd(self):
-        return all(v.is_odd for v in self.vectors) if len(self) > 0 else False
+        return all(v.is_odd() for v in self.vectors()) if len(self) > 0 else False
 
-    @property
     def is_even(self):
-        return all(v.is_even for v in self.vectors)
+        return all(v.is_even() for v in self.vectors())
 
-    @property
     def to_scalar(self):
-        if self.degree > 0:
-            raise RuntimeError(f'polynomial cannot be converted to scalar, it has degree {self.degree}.')
-        return 0 if len(self) == 0 else self.coefficients[0]
+        if self.degree() > 0:
+            raise RuntimeError(f'polynomial cannot be converted to scalar, it has degree {self.degree()}.')
+        return 0 if len(self) == 0 else self.coefficients()[0]
 
     @classmethod
     def quadratic_form(cls, basis, Q):

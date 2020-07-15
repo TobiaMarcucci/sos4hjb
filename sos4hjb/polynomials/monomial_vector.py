@@ -12,7 +12,7 @@ class MonomialVector(poly.BasisVector):
 
     def __mul__(self, monomial):
         self._verify_multiplicand(monomial)
-        variables = set(self.variables + monomial.variables)
+        variables = set(self.variables() + monomial.variables())
         monomial = MonomialVector({v: self[v] + monomial[v] for v in variables})
         return poly.Polynomial({monomial: 1})
 

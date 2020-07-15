@@ -15,7 +15,7 @@ class ChebyshevVector(poly.BasisVector):
 
     def __mul__(self, cheb):
         self._verify_multiplicand(cheb)
-        variables = set(self.variables + cheb.variables)
+        variables = set(self.variables() + cheb.variables())
         prod_powers = ((self[v] + cheb[v], abs(self[v] - cheb[v])) for v in variables)
         coef = .5 ** len(variables)
         multiplication = poly.Polynomial({})
