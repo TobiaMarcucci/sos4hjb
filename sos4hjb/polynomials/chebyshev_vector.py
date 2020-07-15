@@ -1,12 +1,10 @@
-import numpy as np
+from math import cos, acos, cosh, acosh
 from copy import deepcopy
 from itertools import product
-from collections import deque
 
-from sos4hjb.polynomials.basis_vector import BasisVector
-from sos4hjb.polynomials.polynomial import Polynomial
+import sos4hjb.polynomials as poly
 
-class ChebyshevVector(BasisVector):
+class ChebyshevVector(poly.BasisVector):
     '''
     Multivariate Chebyshev polynomials of the first kind of the form
     T_p1(v1) * T_p2(v2) * ... * T_pn(vn).
@@ -15,18 +13,15 @@ class ChebyshevVector(BasisVector):
     def __init__(self, power_dict):
         super().__init__(power_dict)
 
-    def __call__(self, evaluation_dict):
-        return np.prod([self._call_univariate(p, evaluation_dict[v]) for v, p in self])
-
     def __mul__(self, cheb):
         self._verify_multiplicand(cheb)
         variables = set(self.variables + cheb.variables)
         prod_powers = ((self[v] + cheb[v], abs(self[v] - cheb[v])) for v in variables)
         coef = .5 ** len(variables)
-        multiplication = Polynomial({})
+        multiplication = poly.Polynomial({})
         for powers in product(*prod_powers):
             cheb = ChebyshevVector(dict(zip(variables, powers)))
-            multiplication += Polynomial({cheb: coef})
+            multiplication += poly.Polynomial({cheb: coef})
         return multiplication
 
     def derivative(self, variable):
@@ -36,7 +31,7 @@ class ChebyshevVector(BasisVector):
         polynomials of the first.
         '''
         power = self[variable]
-        derivative = Polynomial({})
+        derivative = poly.Polynomial({})
         for q in range(power):
             if power % 2 ^ q % 2:
                 cheb = deepcopy(self)
@@ -46,7 +41,7 @@ class ChebyshevVector(BasisVector):
 
     def integral(self, variable):
         power = self[variable]
-        integral = Polynomial({})
+        integral = poly.Polynomial({})
         cheb = deepcopy(self)
         cheb[variable] = power + 1
         integral[cheb] = .5 / (1 + power)
@@ -62,7 +57,10 @@ class ChebyshevVector(BasisVector):
 
     @staticmethod
     def _call_univariate(power, variable):
-        T = deque([2 * variable ** 2 - 1, variable], maxlen=2)
-        for i in range(power + 1):
-            T.append(2 * variable * T[1] - T[0])
-        return T[1]
+        if abs(variable) <= 1:
+            return cos(power * acos(variable))
+        elif variable > 1:
+            return cosh(power * acosh(variable))
+        else:
+            sign = - 1 if power % 2 else 1
+            return sign * cosh(power * acosh(- variable))

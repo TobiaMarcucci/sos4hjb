@@ -1,4 +1,3 @@
-import numpy as np
 from pydrake.all import MathematicalProgram, Expression
 
 from sos4hjb.polynomials import Polynomial

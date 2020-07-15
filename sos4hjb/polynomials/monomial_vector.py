@@ -1,10 +1,8 @@
-import numpy as np
 from copy import deepcopy
 
-from sos4hjb.polynomials.basis_vector import BasisVector
-from sos4hjb.polynomials.polynomial import Polynomial
+import sos4hjb.polynomials as poly
 
-class MonomialVector(BasisVector):
+class MonomialVector(poly.BasisVector):
     '''
     Monomial of the form v1 ** p1 * v2 ** p2 * ... * vn ** pn.
     '''
@@ -12,14 +10,11 @@ class MonomialVector(BasisVector):
     def __init__(self, power_dict):
         super().__init__(power_dict)
 
-    def __call__(self, evaluation_dict):
-        return np.prod([evaluation_dict[v] ** p for v, p in self])
-
     def __mul__(self, monomial):
         self._verify_multiplicand(monomial)
         variables = set(self.variables + monomial.variables)
         monomial = MonomialVector({v: self[v] + monomial[v] for v in variables})
-        return Polynomial({monomial: 1})
+        return poly.Polynomial({monomial: 1})
 
     def derivative(self, variable):
         power = self[variable]
@@ -28,12 +23,16 @@ class MonomialVector(BasisVector):
         else:
             monomial = deepcopy(self)
             monomial[variable] -= 1
-        return Polynomial({monomial: power})
+        return poly.Polynomial({monomial: power})
 
     def integral(self, variable):
         monomial = deepcopy(self)
         monomial[variable] += 1
-        return Polynomial({monomial: 1 / (self[variable] + 1)})
+        return poly.Polynomial({monomial: 1 / (self[variable] + 1)})
+
+    @staticmethod
+    def _call_univariate(power, variable):
+        return variable ** power
 
     @staticmethod
     def _repr(variable, power):

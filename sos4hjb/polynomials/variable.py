@@ -1,5 +1,3 @@
-import numpy as np
-
 class Variable:
     '''
     Elementary variable for a polynomial.

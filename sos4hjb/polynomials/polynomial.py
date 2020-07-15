@@ -1,8 +1,8 @@
-import numpy as np
 from math import prod
-from copy import deepcopy
+from operator import eq, ne, gt
+from numbers import Number
 
-from sos4hjb.polynomials.basis_vector import BasisVector
+import sos4hjb.polynomials as poly
 
 class Polynomial:
     '''
@@ -16,13 +16,13 @@ class Polynomial:
 
     def __init__(self, coef_dict):
         self._verify_vectors(coef_dict.keys())
-        self.coef_dict = {v: c for v, c in coef_dict.items() if optimistic(c != 0)}
+        self.coef_dict = {v: c for v, c in coef_dict.items() if optimistic(c, ne, 0)}
 
     def __getitem__(self, vector):
         return self.coef_dict[vector] if vector in self.coef_dict else 0
 
     def __setitem__(self, vector, coef):
-        if pessimistic(coef == 0):
+        if pessimistic(coef, eq, 0):
             self.coef_dict.pop(vector, None)
         else:
             self.coef_dict[vector] = coef
@@ -42,7 +42,7 @@ class Polynomial:
         return iter(self.coef_dict.items())
 
     def __call__(self, evaluation_dict):
-        return sum(c * v(evaluation_dict) for v, c in self)
+        return sum([v(evaluation_dict) * c for v, c in self], Polynomial({}))
 
     def __add__(self, poly):
         vectors = set(self.vectors + poly.vectors)
@@ -88,25 +88,22 @@ class Polynomial:
     def __abs__(self):
         return Polynomial({v: abs(c) for v, c in self})
 
-    def _derivative(self, variable):
+    def derivative(self, variable):
         return sum([v.derivative(variable) * c for v, c in self], Polynomial({}))
 
-    def derivative(self, variables):
-        derivative = self
-        for variable in variables:
-            derivative = derivative._derivative(variable)
-        return derivative
-
     def jacobian(self, variables):
-        return [self._derivative(v) for v in variables]
+        return [self.derivative(v) for v in variables]
 
-    def _integral(self, variable):
+    def integral(self, variable):
         return sum([v.integral(variable) * c for v, c in self], Polynomial({}))
 
-    def integral(self, variables):
+    def definite_integral(self, variables, lbs, ubs):
+        if not len(variables) == len(lbs) == len(ubs):
+            raise ValueError(f'integration range and variables have different lenghts.')
         integral = self
-        for variable in variables:
-            integral = integral._integral(variable)
+        for v, lb, ub in zip(variables, lbs, ubs):
+            integral = integral.integral(v)
+            integral = integral({v: ub}) - integral({v: lb})
         return integral
 
     def __repr__(self):
@@ -120,8 +117,8 @@ class Polynomial:
         for vector, coef in self:
 
             # Represent coefficient if different from 1, or if vector is 1.
-            addend = '+' if len(addends) > 0 and optimistic(coef > 0) else ''
-            if optimistic(coef != 1) or len(vector) == 0:
+            addend = '+' if len(addends) > 0 and optimistic(coef, gt, 0) else ''
+            if optimistic(coef, ne, 1) or len(vector) == 0:
                 addend += str(coef)
 
             # Do not represent vector if 1.
@@ -159,6 +156,12 @@ class Polynomial:
     def is_even(self):
         return all(v.is_even for v in self.vectors)
 
+    @property
+    def to_scalar(self):
+        if self.degree > 0:
+            raise RuntimeError(f'polynomial cannot be converted to scalar, it has degree {self.degree}.')
+        return 0 if len(self) == 0 else self.coefficients[0]
+
     @classmethod
     def quadratic_form(cls, basis, Q):
         p = cls({})
@@ -170,14 +173,14 @@ class Polynomial:
     @staticmethod
     def _verify_vectors(vectors):
         for vector in vectors:
-            if not issubclass(type(vector), BasisVector):
+            if not isinstance(vector, poly.BasisVector): # True also if subclass.
                 raise TypeError(f'basis vectors must be subclasses of BasisVector, got {type(vector).__name__}')
         vector_types = set(type(v).__name__ for v in vectors)
         if len(vector_types) > 1:
             raise TypeError(f'basis vectors must have same type, got {vector_types}.')
 
-def optimistic(a):
-    return a if isinstance(a, (bool, np.bool_)) else True
+def pessimistic(a, op, b):
+    return isinstance(a, Number) and isinstance(b, Number) and op(a, b)
 
-def pessimistic(a):
-    return a if isinstance(a, (bool, np.bool_)) else False
+def optimistic(a, op, b):
+    return not isinstance(a, Number) or not isinstance(b, Number) or op(a, b)

@@ -1,7 +1,7 @@
-import numpy as np
+from math import prod
 from itertools import combinations
 
-from sos4hjb.polynomials.variable import Variable
+import sos4hjb.polynomials as poly
 
 class BasisVector:
     '''
@@ -18,7 +18,12 @@ class BasisVector:
             self._verify_variable(variable)
             self._verify_power(power)
         self.power_dict = {v: p for v, p in power_dict.items() if p != 0}
-    
+
+    def __call__(self, evaluation_dict):
+        coefficient = prod([self._call_univariate(self[var], val) for var, val in evaluation_dict.items()])
+        vector = type(self)({v: p for v, p in self if not v in evaluation_dict})
+        return poly.Polynomial({vector: coefficient})
+
     def __getitem__(self, variable):
         self._verify_variable(variable)
         return self.power_dict[variable] if variable in self.power_dict else 0
@@ -106,7 +111,7 @@ class BasisVector:
 
     @ staticmethod
     def _verify_variable(variable):
-        if not isinstance(variable, Variable):
+        if not isinstance(variable, poly.Variable):
             raise TypeError(f'variable must be of Variable type, got {type(variable).__name__}.')
 
     @ staticmethod
