@@ -192,12 +192,13 @@ class Polynomial:
 
     @staticmethod
     def _verify_vectors(vectors):
-        for vector in vectors:
-            if not isinstance(vector, poly.BasisVector): # True also if subclass.
-                raise TypeError(f'basis vectors must be subclasses of BasisVector, got {type(vector).__name__}')
-        vector_types = set(type(v).__name__ for v in vectors)
+        vector_types = set(type(v) for v in vectors)
         if len(vector_types) > 1:
-            raise TypeError(f'basis vectors must have same type, got {vector_types}.')
+            raise TypeError(f'basis vectors must have same type, got {t.__name__ for t in vector_types}.')
+        elif len(vector_types) == 1:
+            vector_type = list(vector_types)[0]
+            if not issubclass(vector_type, poly.BasisVector):
+                raise TypeError(f'basis vectors must be subclasses of BasisVector, got {vector_type.__name__}')
 
 def pessimistic(a, op, b):
     return isinstance(a, Number) and isinstance(b, Number) and op(a, b)
