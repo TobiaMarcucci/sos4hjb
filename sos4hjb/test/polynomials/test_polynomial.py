@@ -36,8 +36,10 @@ class TestPolynomial(unittest.TestCase):
                 Polynomial({v0: 2, 2: 3.22})
             with self.assertRaises(TypeError):
                 Polynomial({v0: 2, x: 3.22})
+            with self.assertRaises(TypeError):
+                Polynomial({3: 2, 4: 3.22})
 
-        # Vector of different types.
+        # Vectors of different types.
         m = MonomialVector({x: 4, y: 1})
         c = ChebyshevVector({x: 4, z: 2})
         with self.assertRaises(TypeError):
@@ -220,6 +222,19 @@ class TestPolynomial(unittest.TestCase):
             # Iterative subtraction.
             p0 -= p1
             self.assertEqual(p0, p01)
+
+    def test_radd(self):
+
+        for vector_type in vector_types:
+
+            x = Variable('x')
+            y = Variable('y')
+            v0 = vector_type({x: 4, y: 1})
+            v1 = vector_type({x: 5, y: 2})
+            p = Polynomial({v0: 2.5, v1: 3})
+            self.assertEqual(p, 0 + p)
+            with self.assertRaises(ValueError):
+                1 + p
 
     def test_mul_imul_rmul(self):
 
@@ -445,6 +460,26 @@ class TestPolynomial(unittest.TestCase):
             p = Polynomial({})
             self.assertTrue(p.is_even())
             self.assertFalse(p.is_odd())
+
+    def test_to_scalar(self):
+
+        for vector_type in vector_types:
+
+            # Zero polynomial.
+            p = Polynomial({})
+            self.assertEqual(p.to_scalar(), 0)
+
+            # Polynomial equal to scalar.
+            x = Variable('x')
+            v0 = vector_type({})
+            v1 = vector_type({x: 2})
+            p = Polynomial({v0: 2.5})
+            self.assertEqual(p.to_scalar(), 2.5)
+
+            # Polynomial not equal to scalar.
+            p = Polynomial({v1: 2.5})
+            with self.assertRaises(RuntimeError):
+                p.to_scalar()
 
     def test_quadratic_form(self):
 

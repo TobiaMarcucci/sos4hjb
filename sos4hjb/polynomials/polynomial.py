@@ -75,7 +75,7 @@ class Polynomial:
         if other == 0:
             return deepcopy(self)
         else:
-            raise TypeError(f'cannot sum {other} and a polynomial.')
+            raise ValueError(f'cannot sum {other} and a polynomial.')
 
     def __sub__(self, poly):
     # Does not use __add__ to avoid the overhead of __neg__.
@@ -184,6 +184,12 @@ class Polynomial:
 
     def is_even(self):
         return all(v.is_even() for v in self.vectors())
+
+    # ToDo: find a way to get rid of this method (currently needed bcs of definite_integral).
+    def to_scalar(self):
+        if self.degree() > 0:
+            raise RuntimeError(f'polynomial cannot be converted to scalar, it has degree {self.degree()}.')
+        return 0 if len(self) == 0 else self.coefficients()[0]
 
     @classmethod
     def quadratic_form(cls, basis, Q):
