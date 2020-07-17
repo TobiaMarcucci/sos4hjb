@@ -55,21 +55,27 @@ class Polynomial:
     def __abs__(self):
         return Polynomial({v: abs(c) for v, c in self})
 
-    def __round__(self, n=0):
-        return Polynomial({v: round(c, n) for v, c in self})
+    def __round__(self, digits=0):
+        return Polynomial({v: round(c, digits) for v, c in self})
 
     def __add__(self, poly):
         vectors = set(self.vectors() + poly.vectors())
         return Polynomial({v: self[v] + poly[v] for v in vectors})
 
     def __iadd__(self, poly):
-        return self + poly
+        for v, c in poly:
+            self[v] += c
+        return self
 
     def __sub__(self, poly):
-        return self + poly * (-1)
+    # Does not use __add__ to avoid the overhead of __neg__.
+        vectors = set(self.vectors() + poly.vectors())
+        return Polynomial({v: self[v] - poly[v] for v in vectors})
 
     def __isub__(self, poly):
-        return self - poly
+        for v, c in poly:
+            self[v] -= c
+        return self
 
     def __mul__(self, other):
 
@@ -82,6 +88,8 @@ class Polynomial:
             return Polynomial({v: c * other for v, c in self})
 
     def __imul__(self, other):
+    # Best practice would be to modify self in place and return self, but does
+    # not work well in this case.
         return self * other
 
     def __rmul__(self, other):

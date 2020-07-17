@@ -48,7 +48,7 @@ class TestSosProgram(unittest.TestCase):
             prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0, places=6)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0, places=5)
             self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
             self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
 
