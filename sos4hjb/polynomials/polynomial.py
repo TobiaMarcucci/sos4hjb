@@ -1,12 +1,14 @@
 from math import prod
 from operator import eq, ne, gt
 from numbers import Number
+from copy import deepcopy
 
 import sos4hjb.polynomials as poly
 
 class Polynomial:
     '''
-    Polynomial expressed as the linear combination of basis vectors.
+    Polynomial expressed as the linear combination of basis vectors. Written in
+    such a way that coef_dict never contains an item with value equal to zero.
 
     Attributes
     ----------
@@ -44,6 +46,18 @@ class Polynomial:
     def __call__(self, evaluation_dict):
         return sum([v(evaluation_dict) * c for v, c in self], Polynomial({}))
 
+    def __pos__(self):
+        return deepcopy(self)
+
+    def __neg__(self):
+        return Polynomial({v: - c for v, c in self})
+
+    def __abs__(self):
+        return Polynomial({v: abs(c) for v, c in self})
+
+    def __round__(self, n=0):
+        return Polynomial({v: round(c, n) for v, c in self})
+
     def __add__(self, poly):
         vectors = set(self.vectors() + poly.vectors())
         return Polynomial({v: self[v] + poly[v] for v in vectors})
@@ -70,6 +84,9 @@ class Polynomial:
     def __imul__(self, other):
         return self * other
 
+    def __rmul__(self, other):
+        return self * other
+
     def __pow__(self, power):
 
         # poly ** 0 = 1, the case 0 ** 0 is left undefined.
@@ -81,12 +98,6 @@ class Polynomial:
 
         # Fall back to the multiplication method.
         return prod([self] * (power - 1), start=self)
-
-    def __round__(self, n=0):
-        return Polynomial({v: round(c, n) for v, c in self})
-
-    def __abs__(self):
-        return Polynomial({v: abs(c) for v, c in self})
 
     def derivative(self, variable):
         return sum([v.derivative(variable) * c for v, c in self], Polynomial({}))
@@ -165,8 +176,10 @@ class Polynomial:
     def quadratic_form(cls, basis, Q):
         p = cls({})
         for i, bi in enumerate(basis):
-            for j, bj in enumerate(basis):
-                p += (bi * bj) * Q[i, j]
+            for j, bj in enumerate(basis[i:]):
+                j += i
+                coef = 1 if i == j else 2
+                p += (bi * bj) * (Q[i, j] * coef)
         return p
 
     @staticmethod

@@ -177,7 +177,7 @@ class TestPolynomial(unittest.TestCase):
             self.assertEqual(set(p.coefficients()), set(coef_dict.values()))
             self.assertEqual(set(p.variables()), set([x, y, z]))
 
-    def test_add_sub(self):
+    def test_add_iadd_sub_isub(self):
 
         for vector_type in vector_types:
 
@@ -206,7 +206,7 @@ class TestPolynomial(unittest.TestCase):
             p0 -= p1
             self.assertEqual(p0, p01)
 
-    def test_mul(self):
+    def test_mul_imul_rmul(self):
 
         for vector_type in vector_types:
 
@@ -219,8 +219,10 @@ class TestPolynomial(unittest.TestCase):
             p = Polynomial({v1: 2.5, v2: 3})
             p6 = Polynomial({v1: 15, v2: 18})
             self.assertEqual(p * 6, p6)
+            self.assertEqual(6 * p, p6)
             p0 = Polynomial({})
             self.assertEqual(p * 0, p0)
+            self.assertEqual(0 * p, p0)
 
             # Iterative multiplication by scalar.
             p *= 6
@@ -260,6 +262,41 @@ class TestPolynomial(unittest.TestCase):
         with self.assertRaises(ValueError):
             p ** 0
 
+    def test_pos_neg(self):
+
+        for vector_type in vector_types:
+
+            x = Variable('x')
+            y = Variable('y')
+            v0 = vector_type({x: 1, y: 3})
+            v1 = vector_type({x: 2, y: 2})
+            v2 = vector_type({x: 4, y: 1})
+            p = Polynomial({v0: 1 / 3, v1: - 5.2, v2: .22})
+            q = Polynomial({v0: - 1 / 3, v1: 5.2, v2: - .22})
+            p_pos = + p
+            p_neg = - p
+            self.assertEqual(p_pos, p)
+            self.assertEqual(p_neg, q)
+
+            # Positive and negative must return a copy.
+            p_pos[v0] = 3
+            p_neg[v0] = 3
+            self.assertTrue(p_pos != p)
+            self.assertTrue(p_neg != q)
+
+    def test_abs(self):
+
+        for vector_type in vector_types:
+
+            x = Variable('x')
+            y = Variable('y')
+            v0 = vector_type({x: 1, y: 3})
+            v1 = vector_type({x: 2, y: 2})
+            v2 = vector_type({x: 4, y: 1})
+            p = Polynomial({v0: 1 / 3, v1: - 5.2, v2: .22233})
+            p_abs = Polynomial({v0: 1 / 3, v1: 5.2, v2: .22233})
+            self.assertEqual(abs(p), p_abs)
+
     def test_round(self):
 
         for vector_type in vector_types:
@@ -276,19 +313,6 @@ class TestPolynomial(unittest.TestCase):
             self.assertEqual(round(p, 1), p1)
             p4 = Polynomial({v0: .3333, v1: - 5.2, v2: .2223})
             self.assertEqual(round(p, 4), p4)
-
-    def test_abs(self):
-
-        for vector_type in vector_types:
-
-            x = Variable('x')
-            y = Variable('y')
-            v0 = vector_type({x: 1, y: 3})
-            v1 = vector_type({x: 2, y: 2})
-            v2 = vector_type({x: 4, y: 1})
-            p = Polynomial({v0: 1 / 3, v1: - 5.2, v2: .22233})
-            p_abs = Polynomial({v0: 1 / 3, v1: 5.2, v2: .22233})
-            self.assertEqual(abs(p), p_abs)
 
     def test_derivative_jacobian(self):
 
