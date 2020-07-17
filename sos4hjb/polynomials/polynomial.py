@@ -44,7 +44,10 @@ class Polynomial:
         return iter(self.coef_dict.items())
 
     def __call__(self, evaluation_dict):
-        return sum([v(evaluation_dict) * c for v, c in self], Polynomial({}))
+        return sum(v(evaluation_dict) * c for v, c in self)
+
+    def substitute(self, evaluation_dict):
+        return sum(v.substitute(evaluation_dict) * c for v, c in self)
 
     def __pos__(self):
         return deepcopy(self)
@@ -67,6 +70,13 @@ class Polynomial:
             self[v] += c
         return self
 
+    def __radd__(self, other):
+        # Defines 0 + self. Useful to use sum() on a list of polynomials.
+        if other == 0:
+            return deepcopy(self)
+        else:
+            raise TypeError(f'cannot sum {other} and a polynomial.')
+
     def __sub__(self, poly):
     # Does not use __add__ to avoid the overhead of __neg__.
         vectors = set(self.vectors() + poly.vectors())
@@ -81,15 +91,15 @@ class Polynomial:
 
         # Multiplication by another polynomial.
         if isinstance(other, Polynomial):
-            return sum([(vs * vo) * (cs * co) for vs, cs in self for vo, co in other], Polynomial({}))
+            return sum((vs * vo) * (cs * co) for vs, cs in self for vo, co in other)
 
         # Anything different from a Polynomial is treated as a scalar.
         else:
             return Polynomial({v: c * other for v, c in self})
 
     def __imul__(self, other):
-    # Best practice would be to modify self in place and return self, but does
-    # not work well in this case.
+        # Best practice would be to modify self in place and return self, but
+        # does not work well in this case.
         return self * other
 
     def __rmul__(self, other):
@@ -108,13 +118,13 @@ class Polynomial:
         return prod([self] * (power - 1), start=self)
 
     def derivative(self, variable):
-        return sum([v.derivative(variable) * c for v, c in self], Polynomial({}))
+        return sum(v.derivative(variable) * c for v, c in self)
 
     def jacobian(self, variables):
         return [self.derivative(v) for v in variables]
 
     def integral(self, variable):
-        return sum([v.integral(variable) * c for v, c in self], Polynomial({}))
+        return sum(v.integral(variable) * c for v, c in self)
 
     def definite_integral(self, variables, lbs, ubs):
         if not len(variables) == len(lbs) == len(ubs):
@@ -122,14 +132,14 @@ class Polynomial:
         integral = self
         for v, lb, ub in zip(variables, lbs, ubs):
             integral = integral.integral(v)
-            integral = integral({v: ub}) - integral({v: lb})
+            integral = integral.substitute({v: ub}) - integral.substitute({v: lb})
         return integral
 
     def in_chebyshev_basis(self):
-        return sum([v.in_chebyshev_basis() * c for v, c in self], Polynomial({}))
+        return sum(v.in_chebyshev_basis() * c for v, c in self)
 
     def in_monomial_basis(self):
-        return sum([v.in_monomial_basis() * c for v, c in self], Polynomial({}))
+        return sum(v.in_monomial_basis() * c for v, c in self)
 
     def __repr__(self):
 
@@ -174,11 +184,6 @@ class Polynomial:
 
     def is_even(self):
         return all(v.is_even() for v in self.vectors())
-
-    def to_scalar(self):
-        if self.degree() > 0:
-            raise RuntimeError(f'polynomial cannot be converted to scalar, it has degree {self.degree()}.')
-        return 0 if len(self) == 0 else self.coefficients()[0]
 
     @classmethod
     def quadratic_form(cls, basis, Q):

@@ -100,19 +100,34 @@ class TestPolynomial(unittest.TestCase):
             v0 = vector_type({x: 1, y: 2})
             v1 = vector_type({x: 3, z: 5})
             p = Polynomial({v0: 3.5, v1: .5})
+            eval_dict = {x: 2, y: .3, z: - 3.12}
+            value = v0(eval_dict) * 3.5 + v1(eval_dict) * .5
+            self.assertAlmostEqual(p(eval_dict), value)
+
+    def test_substitute(self):
+
+        for vector_type in vector_types:
+
+            # Partial evaluation.
+            x = Variable('x')
+            y = Variable('y')
+            z = Variable('z')
+            v0 = vector_type({x: 1, y: 2})
+            v1 = vector_type({x: 3, z: 5})
+            p = Polynomial({v0: 3.5, v1: .5})
             eval_dict = {x: 2, y: .3}
-            p_eval = v0(eval_dict) * 3.5 + v1(eval_dict) * .5
-            self.assertAlmostEqual(p(eval_dict), p_eval)
+            p_eval = v0.substitute(eval_dict) * 3.5 + v1.substitute(eval_dict) * .5
+            self.assertAlmostEqual(p.substitute(eval_dict), p_eval)
 
             # Complete evaluation.
             eval_dict[z] = - 3.12
-            p_eval = v0(eval_dict) * 3.5 + v1(eval_dict) * .5
-            self.assertAlmostEqual(p(eval_dict), p_eval)
+            p_eval = v0.substitute(eval_dict) * 3.5 + v1.substitute(eval_dict) * .5
+            self.assertAlmostEqual(p.substitute(eval_dict), p_eval)
 
-            # Complete evaluation.
+            # Cancellation.
             eval_dict = {x: 0}
             p_eval = Polynomial({})
-            self.assertAlmostEqual(p(eval_dict), p_eval)
+            self.assertAlmostEqual(p.substitute(eval_dict), p_eval)
 
     def test_eq_ne(self):
 
@@ -357,13 +372,13 @@ class TestPolynomial(unittest.TestCase):
             # Definite.
             lbs = [-3, -2, 2.12]
             ubs = [-1, 4, 5]
-            px = px({x: -1}) - px({x: -3})
+            px = px.substitute({x: -1}) - px.substitute({x: -3})
             self.assertEqual(p.definite_integral([x], lbs[:1], ubs[:1]), px)
             pxy = px.integral(y)
-            pxy = pxy({y: 4}) - pxy({y: -2})
+            pxy = pxy.substitute({y: 4}) - pxy.substitute({y: -2})
             self.assertEqual(p.definite_integral([x, y], lbs[:2], ubs[:2]), pxy)
             pxyz = pxy.integral(z)
-            pxyz = pxyz({z: 5}) - pxyz({z: 2.12})
+            pxyz = pxyz.substitute({z: 5}) - pxyz.substitute({z: 2.12})
             self.assertEqual(p.definite_integral([x, y, z], lbs, ubs), pxyz)
 
             # Definite wrong lengths.
@@ -430,26 +445,6 @@ class TestPolynomial(unittest.TestCase):
             p = Polynomial({})
             self.assertTrue(p.is_even())
             self.assertFalse(p.is_odd())
-
-    def test_to_scalar(self):
-
-        for vector_type in vector_types:
-
-            # Zero polynomial.
-            p = Polynomial({})
-            self.assertEqual(p.to_scalar(), 0)
-
-            # Polynomial equal to scalar.
-            x = Variable('x')
-            v0 = vector_type({})
-            v1 = vector_type({x: 2})
-            p = Polynomial({v0: 2.5})
-            self.assertEqual(p.to_scalar(), 2.5)
-
-            # Polynomial not equal to scalar.
-            p = Polynomial({v1: 2.5})
-            with self.assertRaises(RuntimeError):
-                p.to_scalar()
 
     def test_quadratic_form(self):
 

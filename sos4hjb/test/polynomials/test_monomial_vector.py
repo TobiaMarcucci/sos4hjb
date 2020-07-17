@@ -13,23 +13,35 @@ class TestMonomialVector(unittest.TestCase):
         z = Variable('z')
         power_dict = {x: 5, y: 2, z: 3}
         m = MonomialVector(power_dict)
+        x_eval = {x: - 2.1, y: 1.5, z: 5}
+        value = (- 2.1) ** 5 * 1.5 ** 2 *  5 ** 3
+        self.assertAlmostEqual(m(x_eval), value)
+
+    def test_substitute(self):
+
+        # Partial evaluation.
+        x = Variable('x')
+        y = Variable('y')
+        z = Variable('z')
+        power_dict = {x: 5, y: 2, z: 3}
+        m = MonomialVector(power_dict)
         x_eval = {x: - 2.1, y: 1.5}
         m_eval = MonomialVector({z: 3})
         c_eval = (- 2.1) ** 5 * 1.5 ** 2
         p = Polynomial({m_eval: c_eval})
-        self.assertAlmostEqual(m(x_eval), p)
+        self.assertAlmostEqual(m.substitute(x_eval), p)
 
         # Complete evaluation.
         x_eval[z] = 5
         m_eval = MonomialVector({})
         c_eval *= 5 ** 3
         p = Polynomial({m_eval: c_eval})
-        self.assertAlmostEqual(m(x_eval), p)
+        self.assertAlmostEqual(m.substitute(x_eval), p)
 
         # Cancellation.
         x_eval = {z: 0}
         p = Polynomial({})
-        self.assertAlmostEqual(m(x_eval), p)
+        self.assertAlmostEqual(m.substitute(x_eval), p)
 
     def test_mul(self):
 

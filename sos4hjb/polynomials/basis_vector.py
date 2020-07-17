@@ -21,10 +21,12 @@ class BasisVector:
             self._verify_variable(variable)
             self._verify_power(power)
         self.power_dict = {v: p for v, p in power_dict.items() if p != 0}
-        self._hash = self._do_hash() 
+        self._hash = self._do_hash()
 
-    # ToDo: differentiate partial and complete calls.
     def __call__(self, evaluation_dict):
+        return prod(self._call_univariate(p, evaluation_dict[v]) for v, p in self)
+
+    def substitute(self, evaluation_dict):
         coefficient = prod([self._call_univariate(self[var], val) for var, val in evaluation_dict.items()])
         vector = type(self)({v: p for v, p in self if not v in evaluation_dict})
         return poly.Polynomial({vector: coefficient})
