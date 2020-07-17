@@ -30,9 +30,9 @@ class TestSosProgram(unittest.TestCase):
             result = Solve(prog)
             c_opt = result.GetSolution(c)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0, places=4)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1, places=4)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2, places=4)
 
     def test_new_sos_polynomial(self):
 
@@ -48,9 +48,9 @@ class TestSosProgram(unittest.TestCase):
             prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0, places=5)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0, places=4)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1, places=4)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2, places=4)
 
             # Reconstruct polynomial from Gram matrix.
             Q_opt = result.GetSolution(Q)
@@ -66,9 +66,9 @@ class TestSosProgram(unittest.TestCase):
             prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0, places=4)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1, places=4)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2, places=4)
             
             # Reconstruct polynomial from Gram matrices.
             Q_opt_e, Q_opt_o = [result.GetSolution(Qi) for Qi in Q]
@@ -95,9 +95,9 @@ class TestSosProgram(unittest.TestCase):
             prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0, places=4)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1, places=4)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2, places=4)
 
             # Reconstruct polynomial from Gram matrix.
             Q_opt = result.GetSolution(Q)
@@ -116,9 +116,9 @@ class TestSosProgram(unittest.TestCase):
             prog.AddLinearConstraint(p(self.two).to_scalar() == 2)
             result = Solve(prog)
             p_opt = prog.evaluate_at_optimum(p, result)
-            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0)
-            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1)
-            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2)
+            self.assertAlmostEqual(p_opt(self.zero).to_scalar(), 0, places=4)
+            self.assertAlmostEqual(p_opt(self.one).to_scalar(), 1, places=4)
+            self.assertAlmostEqual(p_opt(self.two).to_scalar(), 2, places=4)
 
             # Reconstruct polynomial from Gram matrices.
             Q_opt_e, Q_opt_o = [result.GetSolution(Qi) for Qi in Q]
