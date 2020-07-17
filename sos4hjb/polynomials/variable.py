@@ -8,6 +8,8 @@ class Variable:
         Name of the variable.
     index : int (>= 0)
         Index of the variable. If equal to 0, the variable will have no index.
+    _hash : int
+        Stored (and not computed on the fly) to accelerate comparisons.
     '''
 
     def __init__(self, name, index=0):
@@ -15,15 +17,13 @@ class Variable:
         self._verify_index(index)
         self.name = name
         self.index = index
+        self._hash = hash((self.name, self.index))
 
     def __hash__(self):
-        return hash((self.name, self.index))
+        return self._hash
 
     def __eq__(self, variable):
-        same_type = type(self) == type(variable)
-        same_name = self.name == variable.name
-        same_index = self.index == variable.index
-        return same_type and same_name and same_index
+        return self._hash == variable._hash
     
     def __ne__(self, variable):
         return not self == variable
