@@ -5,12 +5,15 @@ import sos4hjb.polynomials as poly
 
 class BasisVector:
     '''
-    Element of the basis of a polynomial.
+    Element of the basis of a polynomial. Written in such a way that power_dict
+    never contains an item with value equal to zero.
 
     Attributes
     ----------
     power_dict : dict (key : Variable, value : int)
         Dictionary that maps each variable to its power.
+    _hash : int
+        Stored (and not computed on the fly) to accelerate comparisons.
     '''
     
     def __init__(self, power_dict):
@@ -18,7 +21,9 @@ class BasisVector:
             self._verify_variable(variable)
             self._verify_power(power)
         self.power_dict = {v: p for v, p in power_dict.items() if p != 0}
+        self._hash = self._do_hash() 
 
+    # ToDo: differentiate partial and complete calls.
     def __call__(self, evaluation_dict):
         coefficient = prod([self._call_univariate(self[var], val) for var, val in evaluation_dict.items()])
         vector = type(self)({v: p for v, p in self if not v in evaluation_dict})
@@ -35,21 +40,21 @@ class BasisVector:
             self.power_dict.pop(variable, None)
         else:
             self.power_dict[variable] = power
+        self._hash = self._do_hash() 
 
     def __hash__(self):
-        return hash(self._hash_tuple())
+        return self._hash
 
     def __eq__(self, vector):
-        return self._hash_tuple() == vector._hash_tuple()
+        return self._hash == vector._hash
     
     def __ne__(self, vector):
         return not self == vector
 
-    def _hash_tuple(self):
-        assert not 0 in self.powers()
+    def _do_hash(self):
         hash_list = sorted((v.name, v.index, p) for v, p in self)
         hash_list.append(type(self).__name__)
-        return tuple(hash_list)
+        return hash(tuple(hash_list))
 
     def __len__(self):
         return len(self.power_dict)
