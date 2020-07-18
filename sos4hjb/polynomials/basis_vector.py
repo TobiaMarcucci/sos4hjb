@@ -1,5 +1,6 @@
 from math import prod
 from itertools import combinations
+from numbers import Number
 
 import sos4hjb.polynomials as poly
 
@@ -86,6 +87,15 @@ class BasisVector:
 
     def is_odd(self):
         return not self.is_even()
+
+    @classmethod
+    def make_polynomial(cls, other):
+        if isinstance(other, Number):
+            return poly.Polynomial({cls({}): other})
+        elif isinstance(other, poly.Variable):
+            return poly.Polynomial({cls({other: 1}): 1})
+        else:
+            raise TypeError(f'cannot make a polynomial out of a {type(other).__name__}.')
 
     @classmethod
     def _vectors_of_degree(cls, variables, degree):
