@@ -148,21 +148,30 @@ class Polynomial:
             return '0'
 
         # Add one addend per time to the representation.
-        addends = []
+        r = ''
         for vector, coef in self:
 
-            # Represent coefficient if different from 1, or if vector is 1.
-            addend = '+' if len(addends) > 0 and optimistic(coef, gt, 0) else ''
-            if optimistic(coef, ne, 1) or len(vector) == 0:
-                addend += str(coef)
+            # Do not represent plus sign if first addend or negative sign.
+            if len(r) > 0 and optimistic(coef, gt, 0):
+                r += '+'
 
-            # Do not represent vector if 1.
-            if len(vector) > 0:
-                addend += vector.__repr__()
-            addends.append(addend)
+            # Just represent the coefficient if vector is 1.
+            if len(vector) == 0:
+                r += str(coef)
+            else:
 
-        # Sum all the addends.
-        return ''.join(addends)
+                # Just represent - if coefficient is -1.
+                if pessimistic(coef, eq, - 1):
+                    r += '-'
+
+                # Represent coefficient if different from +1.
+                elif optimistic(coef, ne, 1):
+                    r += str(coef)
+
+                # Add representation of vector.
+                r += vector.__repr__()
+
+        return r
             
     def _repr_latex_(self):
         return '$' + self.__repr__() + '$'

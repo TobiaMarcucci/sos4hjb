@@ -565,9 +565,17 @@ class TestPolynomial(unittest.TestCase):
             self.assertEqual(p.__repr__(), r)
             self.assertEqual(p._repr_latex_(), '$' + r + '$')
 
-            # Vector with zero power.
+            # Vector equal to one.
             v2 = vector_type({})
             p = Polynomial({v2: 5.33, v0: 2, v1: 3})
             r = '5.33+2' + v0.__repr__() + '+3' + v1.__repr__()
+            self.assertEqual(p.__repr__(), r)
+            self.assertEqual(p._repr_latex_(), '$' + r + '$')
+
+            # Just represent - if coefficient is -1.
+            w0 = vector_type({x: 1})
+            w1 = vector_type({y: 1})
+            p = Polynomial({w0: 1, w1: -1})
+            r = w0.__repr__() + '-' + w1.__repr__()
             self.assertEqual(p.__repr__(), r)
             self.assertEqual(p._repr_latex_(), '$' + r + '$')
