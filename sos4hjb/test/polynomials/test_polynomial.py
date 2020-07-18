@@ -208,20 +208,36 @@ class TestPolynomial(unittest.TestCase):
             p1 = Polynomial({v1: 2, v0: 3.33})
             p01 = Polynomial({v0: 3.33, v1: 4.5, v2: 3})
             self.assertEqual(p0 + p1, p01)
+            with self.assertRaises(TypeError):
+                p0 + 2
+            with self.assertRaises(TypeError):
+                p0 + 'a'
 
             # Iterative addition.
             p0 += p1
             self.assertEqual(p0, p01)
+            with self.assertRaises(TypeError):
+                p0 += 2
+            with self.assertRaises(TypeError):
+                p0 += 'a'
 
             # Subtraction.
             p0 = Polynomial({v1: 2.5, v2: 3})
             p1 = Polynomial({v1: 2, v0: 3.33})
             p01 = Polynomial({v0: -3.33, v1: .5, v2: 3})
             self.assertEqual(p0 - p1, p01)
+            with self.assertRaises(TypeError):
+                p0 - 2
+            with self.assertRaises(TypeError):
+                p0 - 'a'
 
             # Iterative subtraction.
             p0 -= p1
             self.assertEqual(p0, p01)
+            with self.assertRaises(TypeError):
+                p0 -= 2
+            with self.assertRaises(TypeError):
+                p0 -= 'a'
 
     def test_radd(self):
 
@@ -233,8 +249,10 @@ class TestPolynomial(unittest.TestCase):
             v1 = vector_type({x: 5, y: 2})
             p = Polynomial({v0: 2.5, v1: 3})
             self.assertEqual(p, 0 + p)
-            with self.assertRaises(ValueError):
-                1 + p
+            with self.assertRaises(TypeError):
+                2 + p
+            with self.assertRaises(TypeError):
+                'a' + p
 
     def test_mul_imul_rmul(self):
 

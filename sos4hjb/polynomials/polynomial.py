@@ -61,45 +61,51 @@ class Polynomial:
     def __round__(self, digits=0):
         return Polynomial({v: round(c, digits) for v, c in self})
 
-    def __add__(self, poly):
-        vectors = set(self.vectors() + poly.vectors())
-        return Polynomial({v: self[v] + poly[v] for v in vectors})
+    def __add__(self, other):
+        if isinstance(other, Polynomial):
+            vectors = set(self.vectors() + other.vectors())
+            return Polynomial({v: self[v] + other[v] for v in vectors})
+        else:
+            return NotImplemented
 
-    def __iadd__(self, poly):
-        for v, c in poly:
-            self[v] += c
-        return self
+    def __iadd__(self, other):
+        if isinstance(other, Polynomial):
+            for v, c in other:
+                self[v] += c
+            return self
+        else:
+            return NotImplemented
 
     def __radd__(self, other):
         # Defines 0 + self. Useful to use sum() on a list of polynomials.
-        if other == 0:
+        if pessimistic(other, eq, 0):
             return deepcopy(self)
         else:
-            raise ValueError(f'cannot sum {other} and a polynomial.')
+            return NotImplemented
 
-    def __sub__(self, poly):
-    # Does not use __add__ to avoid the overhead of __neg__.
-        vectors = set(self.vectors() + poly.vectors())
-        return Polynomial({v: self[v] - poly[v] for v in vectors})
+    def __sub__(self, other):
+        # Does not use __add__ to avoid the overhead of __neg__.
+        if isinstance(other, Polynomial):
+            vectors = set(self.vectors() + other.vectors())
+            return Polynomial({v: self[v] - other[v] for v in vectors})
+        else:
+            return NotImplemented
 
-    def __isub__(self, poly):
-        for v, c in poly:
-            self[v] -= c
-        return self
+    def __isub__(self, other):
+        if isinstance(other, Polynomial):
+            for v, c in other:
+                self[v] -= c
+            return self
+        else:
+            return NotImplemented
 
     def __mul__(self, other):
-
-        # Multiplication by another polynomial.
         if isinstance(other, Polynomial):
             return sum((vs * vo) * (cs * co) for vs, cs in self for vo, co in other)
-
-        # Anything different from a Polynomial is treated as a scalar.
-        else:
+        else: # Tries to treat other as a scalar (allows, e.g., symbolic coefficients).
             return Polynomial({v: c * other for v, c in self})
 
     def __imul__(self, other):
-        # Best practice would be to modify self in place and return self, but
-        # does not work well in this case.
         return self * other
 
     def __rmul__(self, other):
