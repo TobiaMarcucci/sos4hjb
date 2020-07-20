@@ -131,6 +131,12 @@ class TestPolynomial(unittest.TestCase):
             p_eval = Polynomial({})
             self.assertAlmostEqual(p.substitute(eval_dict), p_eval)
 
+            # Must always return a polynomial.
+            p = Polynomial({}).substitute({x: 3})
+            self.assertAlmostEqual(p, Polynomial({}))
+            self.assertTrue(isinstance(p, Polynomial))
+
+
     def test_eq_ne(self):
 
         for vector_type in vector_types:
@@ -289,6 +295,12 @@ class TestPolynomial(unittest.TestCase):
             p0 *= p1
             self.assertEqual(p0, p01)
 
+            # Multiplication by zero polynomial must return a polynomial.
+            q = Polynomial({})
+            p0q = p0 * q
+            self.assertEqual(p0q, 0)
+            self.assertTrue(isinstance(p0q, Polynomial))
+
     def test_pow(self):
 
         for vector_type in vector_types:
@@ -384,6 +396,12 @@ class TestPolynomial(unittest.TestCase):
             for pi, qi in zip(p.jacobian([z, x, y]), np.array([pz, px, py])):
                 self.assertEqual(pi, qi)
 
+            # Differentiation of zero polynomial must return a polynomial.
+            p = Polynomial({})
+            px = p.derivative(x)
+            self.assertEqual(px, 0)
+            self.assertTrue(isinstance(px, Polynomial))
+
     def test_integral_definite_integral(self):
 
         for vector_type in vector_types:
@@ -421,6 +439,12 @@ class TestPolynomial(unittest.TestCase):
                 p.definite_integral([x, y, z], lbs[:2], ubs)
             with self.assertRaises(ValueError):
                 p.definite_integral([x, y, z], lbs, ubs[:2])
+
+            # Integration of zero polynomial must return a polynomial.
+            p = Polynomial({})
+            px = p.integral(x)
+            self.assertEqual(px, 0)
+            self.assertTrue(isinstance(px, Polynomial))
 
     def test_degree(self):
         
@@ -516,7 +540,9 @@ class TestPolynomial(unittest.TestCase):
 
         # Zero polynomial.
         p = Polynomial({})
-        self.assertEqual(p.in_chebyshev_basis(), p)
+        p_cheb = p.in_chebyshev_basis()
+        self.assertEqual(p_cheb, p)
+        self.assertTrue(isinstance(p_cheb, Polynomial))
 
         # Non-zero polynomial.
         x = Variable('x')
@@ -532,7 +558,9 @@ class TestPolynomial(unittest.TestCase):
 
         # Zero polynomial.
         p = Polynomial({})
-        self.assertEqual(p.in_monomial_basis(), p)
+        p_mon = p.in_monomial_basis()
+        self.assertEqual(p_mon, p)
+        self.assertTrue(isinstance(p_mon, Polynomial))
 
         # Non-zero polynomial.
         x = Variable('x')

@@ -31,6 +31,9 @@ class Polynomial:
             self._verify_vectors(self.vectors())
 
     def __eq__(self, other):
+        # Comparison with 0 (float) is needed, e.g., in assertAlmostEqual(p, q)
+        # where p and q are two polynomials. Since what the unittest libray does
+        # is round(p - q, 7) == 0.
         other = Polynomial({}) if other == 0 else other
         return self.coef_dict == other.coef_dict
     
@@ -47,7 +50,7 @@ class Polynomial:
         return sum(v(evaluation_dict) * c for v, c in self)
 
     def substitute(self, evaluation_dict):
-        return sum(v.substitute(evaluation_dict) * c for v, c in self)
+        return sum([v.substitute(evaluation_dict) * c for v, c in self], Polynomial({}))
 
     def __pos__(self):
         return deepcopy(self)
@@ -101,8 +104,9 @@ class Polynomial:
 
     def __mul__(self, other):
         if isinstance(other, Polynomial):
-            return sum((vs * vo) * (cs * co) for vs, cs in self for vo, co in other)
-        else: # Tries to treat other as a scalar (allows, e.g., symbolic coefficients).
+            return sum([(vs * vo) * (cs * co) for vs, cs in self for vo, co in other], Polynomial({}))
+        else:
+            # Tries to treat other as a scalar (allows, e.g., symbolic coefficients).
             return Polynomial({v: c * other for v, c in self})
 
     def __imul__(self, other):
@@ -124,13 +128,13 @@ class Polynomial:
         return prod([self] * (power - 1), start=self)
 
     def derivative(self, variable):
-        return sum(v.derivative(variable) * c for v, c in self)
+        return sum([v.derivative(variable) * c for v, c in self], Polynomial({}))
 
     def jacobian(self, variables):
         return [self.derivative(v) for v in variables]
 
     def integral(self, variable):
-        return sum(v.integral(variable) * c for v, c in self)
+        return sum([v.integral(variable) * c for v, c in self], Polynomial({}))
 
     def definite_integral(self, variables, lbs, ubs):
         if not len(variables) == len(lbs) == len(ubs):
@@ -142,10 +146,10 @@ class Polynomial:
         return integral
 
     def in_chebyshev_basis(self):
-        return sum(v.in_chebyshev_basis() * c for v, c in self)
+        return sum([v.in_chebyshev_basis() * c for v, c in self], Polynomial({}))
 
     def in_monomial_basis(self):
-        return sum(v.in_monomial_basis() * c for v, c in self)
+        return sum([v.in_monomial_basis() * c for v, c in self], Polynomial({}))
 
     def __repr__(self):
 
