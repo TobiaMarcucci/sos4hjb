@@ -27,4 +27,4 @@ jobs:
         pip install pytest pytest-cov
     - name: Test with pytest
       run: |
-        pytest --cov=sos4hjb --ignore=sos4hjb/test/optimization
+        pytest --cov=sos4hjb --ignore=sos4hjb/test/optimization/test_sos_program_drake.py
