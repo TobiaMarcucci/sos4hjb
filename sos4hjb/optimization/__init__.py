@@ -1,1 +1,1 @@
-from .sos_program import SosProgram
+from .sos_program import SosProgramParent

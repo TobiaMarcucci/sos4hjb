@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def level_plot(y, x_min, x_max, label=None, title=None, file_name=None):
+def level_plot(y, x_min, x_max, xlabel=r'$x_1$', ylabel=r'$x_2$', zlabel=None,
+    title=None, file_name=None):
     
     # Grid state space.
     n = 101
@@ -24,12 +25,12 @@ def level_plot(y, x_min, x_max, label=None, title=None, file_name=None):
 
     # Color bar.
     cbar = plt.colorbar()
-    if label is not None:
-        cbar.set_label(label)
+    if zlabel is not None:
+        cbar.set_label(zlabel)
     
     # Miscelaneous options.
-    plt.xlabel(r'$x_1$')
-    plt.ylabel(r'$x_2$')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.title(title)
 
     # Save image if requested.
