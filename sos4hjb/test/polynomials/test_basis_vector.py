@@ -3,7 +3,7 @@ import unittest
 from sos4hjb.polynomials import (Variable, BasisVector, MonomialVector,
                                  ChebyshevVector, Polynomial)
 
-vector_types = (MonomialVector, ChebyshevVector)
+Vectors = (MonomialVector, ChebyshevVector)
 
 class TestBasisVector(unittest.TestCase):
 
@@ -140,26 +140,26 @@ class TestBasisVector(unittest.TestCase):
 
     def test_make_polynomial(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Make a polynomial out of a number.
-            p = vector_type.make_polynomial(1)
-            self.assertEqual(p, Polynomial({vector_type({}): 1}))
-            p = vector_type.make_polynomial(- 3.14)
-            self.assertEqual(p, Polynomial({vector_type({}): - 3.14}))
+            p = Vector.make_polynomial(1)
+            self.assertEqual(p, Polynomial({Vector({}): 1}))
+            p = Vector.make_polynomial(- 3.14)
+            self.assertEqual(p, Polynomial({Vector({}): - 3.14}))
 
             # Make a polynomial out of a variable.
             x = Variable('x')
-            p = vector_type.make_polynomial(x)
-            self.assertEqual(p, Polynomial({vector_type({x: 1}): 1}))
+            p = Vector.make_polynomial(x)
+            self.assertEqual(p, Polynomial({Vector({x: 1}): 1}))
 
             # Type error otherwise.
             with self.assertRaises(TypeError):
-                p = vector_type.make_polynomial('a')
+                p = Vector.make_polynomial('a')
             with self.assertRaises(TypeError):
-                p = vector_type.make_polynomial(MonomialVector({}))
+                p = Vector.make_polynomial(MonomialVector({}))
             with self.assertRaises(TypeError):
-                p = vector_type.make_polynomial(Polynomial({}))
+                p = Vector.make_polynomial(Polynomial({}))
 
     def test_construct_basis(self):
 

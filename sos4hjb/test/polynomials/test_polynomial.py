@@ -4,13 +4,13 @@ import numpy as np
 from sos4hjb.polynomials import (Variable, BasisVector, MonomialVector,
                                  ChebyshevVector, Polynomial)
 
-vector_types = (MonomialVector, ChebyshevVector)
+Vectors = (MonomialVector, ChebyshevVector)
 
 class TestPolynomial(unittest.TestCase):
 
     def test_init(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Empty initialization.
             p = Polynomial({})
@@ -20,8 +20,8 @@ class TestPolynomial(unittest.TestCase):
             x = Variable('x')
             y = Variable('y')
             z = Variable('z')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 4, z: 2})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 4, z: 2})
             coef_dict = {v0: 2, v1: 3.22}
             p = Polynomial(coef_dict)
             self.assertEqual(p.coef_dict, coef_dict)
@@ -47,14 +47,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_getter_setter(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Getter.
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
-            v2 = vector_type({x: 5, y: 12})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, y: 2})
+            v2 = Vector({x: 5, y: 12})
             p = Polynomial({v0: 2, v1: 3.22})
             self.assertEqual(p[v0], 2)
             self.assertEqual(p[v1], 3.22)
@@ -93,14 +93,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_call(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Partial evaluation.
             x = Variable('x')
             y = Variable('y')
             z = Variable('z')
-            v0 = vector_type({x: 1, y: 2})
-            v1 = vector_type({x: 3, z: 5})
+            v0 = Vector({x: 1, y: 2})
+            v1 = Vector({x: 3, z: 5})
             p = Polynomial({v0: 3.5, v1: .5})
             eval_dict = {x: 2, y: .3, z: - 3.12}
             value = v0(eval_dict) * 3.5 + v1(eval_dict) * .5
@@ -108,14 +108,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_substitute(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Partial evaluation.
             x = Variable('x')
             y = Variable('y')
             z = Variable('z')
-            v0 = vector_type({x: 1, y: 2})
-            v1 = vector_type({x: 3, z: 5})
+            v0 = Vector({x: 1, y: 2})
+            v1 = Vector({x: 3, z: 5})
             p = Polynomial({v0: 3.5, v1: .5})
             eval_dict = {x: 2, y: .3}
             p_eval = v0.substitute(eval_dict) * 3.5 + v1.substitute(eval_dict) * .5
@@ -139,14 +139,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_eq_ne(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Comparisons with different lengths.
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
-            v2 = vector_type({x: 6})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, y: 2})
+            v2 = Vector({x: 6})
             p1 = Polynomial({v0: 5, v1: 2.5, v2: 3})
             p2 = Polynomial({v1: 2.5, v0: 5, v2: 3})
             p3 = Polynomial({v0: 5, v2: 3})
@@ -172,26 +172,26 @@ class TestPolynomial(unittest.TestCase):
 
     def test_len(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
-            v2 = vector_type({x: 6})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, y: 2})
+            v2 = Vector({x: 6})
             p = Polynomial({v0: 5, v1: 2.5, v2: 3})
             self.assertEqual(len(p), 3)
 
     def test_iter(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             x = Variable('x')
             y = Variable('y')
             z = Variable('z')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, z: 2})
-            v2 = vector_type({x: 6})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, z: 2})
+            v2 = Vector({x: 6})
             coef_dict = {v0: 5, v1: 2.5, v2: 3}
             p = Polynomial(coef_dict)
             for v, c in p:
@@ -202,14 +202,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_add_iadd_sub_isub(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Addition.
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
-            v2 = vector_type({x: 6})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, y: 2})
+            v2 = Vector({x: 6})
             p0 = Polynomial({v1: 2.5, v2: 3})
             p1 = Polynomial({v1: 2, v0: 3.33})
             p01 = Polynomial({v0: 3.33, v1: 4.5, v2: 3})
@@ -247,12 +247,12 @@ class TestPolynomial(unittest.TestCase):
 
     def test_radd(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, y: 2})
             p = Polynomial({v0: 2.5, v1: 3})
             self.assertEqual(p, 0 + p)
             with self.assertRaises(TypeError):
@@ -262,14 +262,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_mul_imul_rmul(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Multiplication by scalar.
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
-            v2 = vector_type({x: 6})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, y: 2})
+            v2 = Vector({x: 6})
             p = Polynomial({v1: 2.5, v2: 3})
             p6 = Polynomial({v1: 15, v2: 18})
             self.assertEqual(p * 6, p6)
@@ -303,14 +303,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_pow(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 1, y: 3})
-            v1 = vector_type({x: 2, y: 2})
+            v0 = Vector({x: 1, y: 3})
+            v1 = Vector({x: 2, y: 2})
             p = Polynomial({v0: 3, v1: 5})
-            p0 = Polynomial({vector_type({}): 1})
+            p0 = Polynomial({Vector({}): 1})
             self.assertEqual(p ** 0, p0)
             p_pow = Polynomial({v0: 3, v1: 5})
             for i in range(1, 5):
@@ -324,13 +324,13 @@ class TestPolynomial(unittest.TestCase):
 
     def test_pos_neg(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 1, y: 3})
-            v1 = vector_type({x: 2, y: 2})
-            v2 = vector_type({x: 4, y: 1})
+            v0 = Vector({x: 1, y: 3})
+            v1 = Vector({x: 2, y: 2})
+            v2 = Vector({x: 4, y: 1})
             p = Polynomial({v0: 1 / 3, v1: - 5.2, v2: .22})
             q = Polynomial({v0: - 1 / 3, v1: 5.2, v2: - .22})
             p_pos = + p
@@ -346,26 +346,26 @@ class TestPolynomial(unittest.TestCase):
 
     def test_abs(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 1, y: 3})
-            v1 = vector_type({x: 2, y: 2})
-            v2 = vector_type({x: 4, y: 1})
+            v0 = Vector({x: 1, y: 3})
+            v1 = Vector({x: 2, y: 2})
+            v2 = Vector({x: 4, y: 1})
             p = Polynomial({v0: 1 / 3, v1: - 5.2, v2: .22233})
             p_abs = Polynomial({v0: 1 / 3, v1: 5.2, v2: .22233})
             self.assertEqual(abs(p), p_abs)
 
     def test_round(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 1, y: 3})
-            v1 = vector_type({x: 2, y: 2})
-            v2 = vector_type({x: 4, y: 1})
+            v0 = Vector({x: 1, y: 3})
+            v1 = Vector({x: 2, y: 2})
+            v2 = Vector({x: 4, y: 1})
             p = Polynomial({v0: 1 / 3, v1: - 5.2, v2: .22233})
             p0 = Polynomial({v1: - 5})
             self.assertEqual(round(p), p0)
@@ -376,14 +376,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_derivative_jacobian(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
         
             # Derivative.
             x = Variable('x')
             y = Variable('y')
             z = Variable('z')
-            m0 = vector_type({x: 4, y: 1})
-            m1 = vector_type({x: 5, y: 2})
+            m0 = Vector({x: 4, y: 1})
+            m1 = Vector({x: 5, y: 2})
             p = Polynomial({m0: 2.5, m1: -3})
             px = m0.derivative(x) * 2.5 + m1.derivative(x) * (-3)
             py = m0.derivative(y) * 2.5 + m1.derivative(y) * (-3)
@@ -404,14 +404,14 @@ class TestPolynomial(unittest.TestCase):
 
     def test_integral_definite_integral(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Indefinite.
             x = Variable('x')
             y = Variable('y')
             z = Variable('z')
-            m0 = vector_type({x: 4, y: 1})
-            m1 = vector_type({x: 5, y: 2})
+            m0 = Vector({x: 4, y: 1})
+            m1 = Vector({x: 5, y: 2})
             p = Polynomial({m0: 2.5, m1: -3})
             px = m0.integral(x) * 2.5 + m1.integral(x) * (-3)
             py = m0.integral(y) * 2.5 + m1.integral(y) * (-3)
@@ -448,20 +448,20 @@ class TestPolynomial(unittest.TestCase):
 
     def test_degree(self):
         
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Degrees 8 and 5.
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 3})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, y: 3})
             p = Polynomial({v0: 2.5, v1: 3})
             self.assertEqual(p.degree(), 8)
             p[v1] = 0
             self.assertEqual(p.degree(), 5)
 
             # Degree 0.
-            v = vector_type({})
+            v = Vector({})
             p = Polynomial({v: 2.5})
             self.assertEqual(p.degree(), 0)
 
@@ -471,13 +471,13 @@ class TestPolynomial(unittest.TestCase):
 
     def test_is_odd_is_even(self):
         
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Even.
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 2})
-            v1 = vector_type({x: 1, y: 1})
+            v0 = Vector({x: 4, y: 2})
+            v1 = Vector({x: 1, y: 1})
             p = Polynomial({v0: 2.5, v1: 3})
             self.assertTrue(p.is_even())
             self.assertFalse(p.is_odd())
@@ -493,7 +493,7 @@ class TestPolynomial(unittest.TestCase):
             self.assertFalse(p.is_even())
 
             # Degree 0.
-            v = vector_type({})
+            v = Vector({})
             p = Polynomial({v: 1})
             self.assertTrue(p.is_even())
             self.assertFalse(p.is_odd())
@@ -505,7 +505,7 @@ class TestPolynomial(unittest.TestCase):
 
     def test_to_scalar(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Zero polynomial.
             p = Polynomial({})
@@ -513,8 +513,8 @@ class TestPolynomial(unittest.TestCase):
 
             # Polynomial equal to scalar.
             x = Variable('x')
-            v0 = vector_type({})
-            v1 = vector_type({x: 2})
+            v0 = Vector({})
+            v1 = Vector({x: 2})
             p = Polynomial({v0: 2.5})
             self.assertEqual(p.to_scalar(), 2.5)
 
@@ -525,10 +525,10 @@ class TestPolynomial(unittest.TestCase):
 
     def test_quadratic_form(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             x = Variable.multivariate('x', 2)
-            basis = vector_type.construct_basis(x, 1)
+            basis = Vector.construct_basis(x, 1)
             Q = np.array([[1, 2, 3], [2, 4, 5], [3, 5, 6]])
             p = Polynomial.quadratic_form(basis, Q)
             p_target = basis[0] * basis[0] + (basis[0] * basis[1]) * 4 + \
@@ -574,13 +574,13 @@ class TestPolynomial(unittest.TestCase):
 
     def test_repr(self):
 
-        for vector_type in vector_types:
+        for Vector in Vectors:
 
             # Only + signs.
             x = Variable('x')
             y = Variable('y')
-            v0 = vector_type({x: 4, y: 1})
-            v1 = vector_type({x: 5, y: 2})
+            v0 = Vector({x: 4, y: 1})
+            v1 = Vector({x: 5, y: 2})
             p = Polynomial({v0: 2.5, v1: 3})
             r = '2.5' + v0.__repr__() + '+3' + v1.__repr__()
             self.assertEqual(p.__repr__(), r)
@@ -612,15 +612,15 @@ class TestPolynomial(unittest.TestCase):
             self.assertEqual(p._repr_latex_(), '$' + r + '$')
 
             # Vector equal to one.
-            v2 = vector_type({})
+            v2 = Vector({})
             p = Polynomial({v2: 5.33, v0: 2, v1: 3})
             r = '5.33+2' + v0.__repr__() + '+3' + v1.__repr__()
             self.assertEqual(p.__repr__(), r)
             self.assertEqual(p._repr_latex_(), '$' + r + '$')
 
             # Just represent - if coefficient is -1.
-            w0 = vector_type({x: 1})
-            w1 = vector_type({y: 1})
+            w0 = Vector({x: 1})
+            w1 = Vector({y: 1})
             p = Polynomial({w0: 1, w1: -1})
             r = w0.__repr__() + '-' + w1.__repr__()
             self.assertEqual(p.__repr__(), r)

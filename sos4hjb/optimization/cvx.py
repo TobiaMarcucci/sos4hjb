@@ -27,7 +27,7 @@ class SosProgram(SosProgramParent):
         
     def solve(self):
         prob = cp.Problem(cp.Minimize(self.cost), self.constraints)
-        prob.solve(solver='MOSEK')
+        prob.solve()
         self.value = prob.value
 
     def minimum(self):
